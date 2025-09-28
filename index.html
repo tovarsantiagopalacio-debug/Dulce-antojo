@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dulce Antojo - Pedidos Mayoristas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212; /* Color de fondo principal oscuro */
+            scroll-behavior: smooth;
+        }
+        .hero-bg {
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/portada.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+        /* Estilos para el acordeón de FAQ */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        details > summary .plus-icon {
+            transition: transform 0.2s ease-in-out;
+        }
+        details[open] > summary .plus-icon {
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <!-- =========== Header =========== -->
+    <header class="bg-gray-900/80 backdrop-blur-lg border-b border-gray-700 sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0c-.454-.303-.977-.454-1.5-.454V5.546c.523 0 1.046-.151 1.5-.454a2.704 2.704 0 013 0 2.704 2.704 0 003 0 2.704 2.704 0 013 0 2.704 2.704 0 003 0c.454.303.977.454 1.5.454v10z"></path></svg>
+                <h1 class="text-2xl font-bold text-white">Dulce Antojo</h1>
+            </div>
+
+            <!-- Navegación -->
+            <nav class="hidden md:flex space-x-6">
+                <a href="#" class="text-gray-300 hover:text-white transition">Inicio</a>
+                <a href="#productos" class="text-gray-300 hover:text-white transition">Catálogo</a>
+                <a href="#faq" class="text-gray-300 hover:text-white transition">FAQ</a>
+                <a href="#contacto" class="text-gray-300 hover:text-white transition">Contacto</a>
+            </nav>
+
+            <!-- Carrito y Perfil -->
+            <div class="flex items-center space-x-4">
+                <button id="cart-button" class="relative flex items-center bg-white text-gray-900 px-4 py-2 rounded-full hover:bg-gray-200 transition duration-300 font-semibold">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span>Pedido (<span id="cart-count">0</span>)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =========== Main Content =========== -->
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- Hero Section -->
+        <section class="hero-bg rounded-2xl text-white p-8 md:p-16 flex flex-col items-center justify-center text-center mb-12 min-h-[400px] md:min-h-[500px]">
+            <div class="max-w-4xl">
+                <h2 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">El Sabor Saludable que tu Negocio Necesita</h2>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-gray-300">Ofrece a tus clientes granizados 100% naturales, sin azúcar y deliciosos. Aumenta tus ventas y fideliza al mercado fitness.</p>
+                <a href="#productos" class="bg-white text-gray-900 font-bold py-3 px-8 rounded-full text-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105">Ver Catálogo</a>
+            </div>
+        </section>
+
+        <!-- Cómo Funciona -->
+        <section class="mb-16">
+            <h3 class="text-3xl font-bold text-center text-white mb-12">Aliados en tu Crecimiento en 3 Pasos</h3>
+            <div class="max-w-5xl mx-auto grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-green-500 transition-all duration-300">
+                    <div class="bg-gray-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-5">
+                        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-2 text-white">1. Explora el Catálogo</h4>
+                    <p class="text-gray-400">Navega por nuestra variedad de sabores 100% naturales. Puedes combinar los que quieras para armar tu pedido, siempre y cuando cumplas con el mínimo de 20 unidades en total.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-green-500 transition-all duration-300">
+                    <div class="bg-gray-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-5">
+                         <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-2 text-white">2. Finaliza tu Pedido</h4>
+                    <p class="text-gray-400">Una vez que tengas tu selección, ve al carrito de compras para verificar las cantidades y el total. El proceso es intuitivo y te tomará solo un minuto.</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-green-500 transition-all duration-300">
+                    <div class="bg-gray-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-5">
+                        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1zM21 11V5a2 2 0 00-2-2H7a2 2 0 00-2 2v2"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 11h2.5l1.5-4H17m-5-4v10m0 0l-2-2m2 2l2-2"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-2 text-white">3. Recibe y Vende</h4>
+                    <p class="text-gray-400">Nos encargamos de la logística. Tu pedido llegará en perfectas condiciones, manteniendo la cadena de frío para garantizar la máxima calidad y frescura a tus clientes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Productos -->
+        <section id="productos" class="mb-16">
+            <h3 class="text-3xl font-bold text-white mb-8">Nuestro Catálogo</h3>
+            <div id="product-list" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Los productos se insertarán aquí desde JS -->
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="mb-16">
+            <h3 class="text-3xl font-bold text-white mb-8 text-center">Preguntas Frecuentes</h3>
+            <div class="max-w-3xl mx-auto space-y-4">
+                <details class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                    <summary class="font-semibold text-lg cursor-pointer flex justify-between items-center">
+                        ¿Cuál es la vida útil de los granizados?
+                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </summary>
+                    <p class="text-gray-400 mt-4">Nuestros granizados, al ser 100% naturales y no contener conservantes artificiales, tienen una vida útil recomendada de 3 meses manteniéndolos en congelación a -18°C. Esto garantiza que el sabor y la textura se mantengan en perfectas condiciones.</p>
+                </details>
+                <details class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                    <summary class="font-semibold text-lg cursor-pointer flex justify-between items-center">
+                        ¿Qué métodos de pago aceptan?
+                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </summary>
+                    <p class="text-gray-400 mt-4">Para el primer pedido de un nuevo socio comercial, requerimos el pago contra entrega para mayor seguridad. A partir del segundo pedido, ofrecemos la posibilidad de acceder a un crédito de 30 días, sujeto a estudio y acuerdo previo.</p>
+                </details>
+                <details class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                    <summary class="font-semibold text-lg cursor-pointer flex justify-between items-center">
+                        ¿El envío tiene algún costo?
+                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </summary>
+                    <p class="text-gray-400 mt-4">Ofrecemos envío gratuito dentro del perímetro urbano de Armenia para todos los pedidos que superen las 50 unidades. Para pedidos de menor cantidad o para entregas en zonas aledañas, se calculará una tarifa de domicilio muy competitiva.</p>
+                </details>
+                 <details class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                    <summary class="font-semibold text-lg cursor-pointer flex justify-between items-center">
+                        ¿Ofrecen material publicitario (POP) para mi negocio?
+                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </summary>
+                    <p class="text-gray-400 mt-4">¡Claro que sí! Entendemos la importancia de promocionar el producto. Con tu primer pedido, incluimos sin costo adicional un kit de material POP con habladores para mesas o vitrinas y pequeños afiches para ayudar a impulsar las ventas en tu punto.</p>
+                </details>
+            </div>
+        </section>
+
+        <!-- Contacto -->
+        <section id="contacto" class="mb-16">
+            <h3 class="text-3xl font-bold text-white mb-8 text-center">Conviértete en Socio</h3>
+            <p class="text-center text-gray-400 max-w-2xl mx-auto mb-12">¿Interesado en vender nuestros productos? Déjanos tus datos y nos pondremos en contacto contigo para explorar una alianza.</p>
+            <form id="contact-form" class="max-w-2xl mx-auto bg-gray-800 p-8 rounded-xl border border-gray-700">
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-300">Tu Nombre</label>
+                        <input type="text" id="name" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5" placeholder="John Doe" required>
+                    </div>
+                    <div>
+                        <label for="business" class="block mb-2 text-sm font-medium text-gray-300">Nombre del Negocio</label>
+                        <input type="text" id="business" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5" placeholder="Gimnasio Fit" required>
+                    </div>
+                </div>
+                <div class="mb-6">
+                     <label for="email" class="block mb-2 text-sm font-medium text-gray-300">Correo Electrónico</label>
+                     <input type="email" id="email" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5" placeholder="tu@negocio.com" required>
+                </div>
+                <div>
+                    <label for="message" class="block mb-2 text-sm font-medium text-gray-300">Mensaje</label>
+                    <textarea id="message" rows="4" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5" placeholder="Cuéntanos sobre tu negocio y qué te interesa..."></textarea>
+                </div>
+                <button type="submit" class="mt-8 w-full bg-green-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-green-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500">Enviar Mensaje</button>
+            </form>
+        </section>
+
+    </main>
+    
+    <!-- =========== Footer =========== -->
+    <footer class="bg-gray-900 text-white mt-12 border-t border-gray-800">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="text-xl font-bold mb-2">Dulce Antojo</h4>
+                    <p class="text-gray-400">Proveedores líderes de postres helados saludables en el Eje Cafetero.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Secciones</h4>
+                    <ul class="text-gray-400 space-y-1">
+                        <li><a href="#" class="hover:text-white">Inicio</a></li>
+                        <li><a href="#productos" class="hover:text-white">Catálogo</a></li>
+                        <li><a href="#faq" class="hover:text-white">FAQ</a></li>
+                        <li><a href="#contacto" class="hover:text-white">Conviértete en Socio</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Contacto</h4>
+                    <p class="text-gray-400">Armenia, Quindío, Colombia</p>
+                    <p class="text-gray-400">pedidos@dulceantojo.co</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-4 text-center text-gray-500 text-sm">
+                <p>&copy; 2025 Dulce Antojo. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =========== Carrito Modal =========== -->
+    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-end hidden modal-backdrop">
+        <div id="cart-content" class="bg-gray-800 text-white w-full max-w-md h-full shadow-lg transform translate-x-full modal-content flex flex-col border-l border-gray-700">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-2xl font-bold">Tu Pedido</h3>
+                <button id="close-cart-button" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div id="cart-items" class="p-4 flex-grow overflow-y-auto">
+                <div id="empty-cart-message" class="text-center text-gray-500 mt-10">
+                    <svg class="w-16 h-16 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <p class="mt-4">Tu carrito de pedidos está vacío.</p>
+                    <p class="text-sm">Agrega productos para empezar.</p>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 border-t border-gray-700 bg-gray-900">
+                 <div class="flex justify-between items-center mb-2 text-lg font-semibold">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">$0</span>
+                </div>
+                <p id="min-order-message" class="text-yellow-400 text-sm text-center mb-3 hidden">Se requiere un pedido mínimo de 20 unidades.</p>
+                <button id="checkout-button" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-green-700 transition duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-green-500">
+                    Finalizar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mensaje de confirmación (Toast) -->
+    <div id="toast-message" class="fixed bottom-5 right-5 bg-green-500 text-white py-3 px-5 rounded-lg shadow-lg opacity-0 transform translate-y-10 transition-all duration-500">
+        <!-- El mensaje se insertará aquí -->
+    </div>
+
+    <!-- Modal de Confirmación de Pedido -->
+    <div id="order-confirmation-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden modal-backdrop p-4">
+        <div id="order-confirmation-content" class="bg-gray-800 rounded-2xl shadow-lg w-full max-w-md p-8 text-center transform scale-95 opacity-0 modal-content">
+            <div class="w-20 h-20 bg-green-500/20 rounded-full mx-auto flex items-center justify-center mb-5">
+                <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">¡Pedido Recibido!</h3>
+            <p class="text-gray-400 mb-6">Gracias por confiar en Dulce Antojo. Nos pondremos en contacto con tu negocio muy pronto para coordinar los detalles de la entrega y el pago.</p>
+            <div class="bg-gray-700/50 rounded-lg p-4 mb-6 text-left">
+                <h4 class="font-semibold mb-2 text-white">Resumen del Pedido:</h4>
+                <div class="flex justify-between text-gray-300">
+                    <span>Total de Unidades:</span>
+                    <span id="summary-total-items" class="font-bold"></span>
+                </div>
+                <div class="flex justify-between text-gray-300 mt-1">
+                    <span>Monto Total:</span>
+                    <span id="summary-subtotal" class="font-bold"></span>
+                </div>
+            </div>
+            <button id="close-confirmation-modal-button" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-green-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const products = [
+                 { 
+                    id: 1, 
+                    name: 'Granizado de Maracuyá', 
+                    description: 'Refrescante y tropical, el equilibrio perfecto entre dulce y ácido. 100% natural.',
+                    price: 3000,
+                    priceFormatted: '$3,000',
+                    image: 'img/Granizado de maracuya.png'
+                },
+                { 
+                    id: 2, 
+                    name: 'Granizado de Oreo', 
+                    description: 'Cremoso y delicioso, con trozos de galleta Oreo real. Un favorito instantáneo.',
+                    price: 3000,
+                    priceFormatted: '$3,000',
+                    image: 'img/Granizado de  oreo.png'
+                },
+                { 
+                    id: 3, 
+                    name: 'Granizado de Mora', 
+                    description: 'Hecho con moras frescas de la región. Lleno de antioxidantes y un sabor inigualable.',
+                    price: 3000,
+                    priceFormatted: '$3,000',
+                    image: 'img/Granizado de  mora.png'
+                },
+                { 
+                    id: 4, 
+                    name: 'Granizado de Guanábana', 
+                    description: 'Exótico y cremoso, el sabor auténtico de una de las frutas favoritas de Colombia.',
+                    price: 3000,
+                    priceFormatted: '$3,000',
+                    image: 'img/Granizado de guanabana.png'
+                },
+                { 
+                    id: 5, 
+                    name: 'Granizado de Milo', 
+                    description: 'La energía y el sabor inconfundible de Milo en una versión helada y deliciosa.',
+                    price: 3000,
+                    priceFormatted: '$3,000',
+                    image: 'img/Granizados de milo.png'
+                },
+                { 
+                    id: 6, 
+                    name: 'Granizado de Café', 
+                    description: 'El intenso y aromático sabor del café de nuestra tierra, perfecto para recargar energías.',
+                    price: 3000,
+                    priceFormatted: '$3,000',
+                    image: 'img/Granizados de cafe.png'
+                },
+            ];
+
+            let cart = [];
+            // DOM Elements
+            const productList = document.getElementById('product-list');
+            const cartButton = document.getElementById('cart-button');
+            const closeCartButton = document.getElementById('close-cart-button');
+            const cartModal = document.getElementById('cart-modal');
+            const cartContent = document.getElementById('cart-content');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartSubtotal = document.getElementById('cart-subtotal');
+            const emptyCartMessage = document.getElementById('empty-cart-message');
+            const checkoutButton = document.getElementById('checkout-button');
+            const toastMessage = document.getElementById('toast-message');
+            const contactForm = document.getElementById('contact-form');
+            const minOrderMessage = document.getElementById('min-order-message');
+            const orderConfirmationModal = document.getElementById('order-confirmation-modal');
+            const orderConfirmationContent = document.getElementById('order-confirmation-content');
+            const closeConfirmationModalButton = document.getElementById('close-confirmation-modal-button');
+            const summaryTotalItems = document.getElementById('summary-total-items');
+            const summarySubtotal = document.getElementById('summary-subtotal');
+            
+            const MIN_ORDER_QUANTITY = 20;
+
+            const renderProducts = () => {
+                productList.innerHTML = '';
+                products.forEach(product => {
+                    productList.innerHTML += `
+                        <div class="bg-gray-800 rounded-xl overflow-hidden flex flex-col border border-gray-700">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/2d2d2d/9ca3af?text=Imagen+de+${product.name.replace(' ', '+')}';">
+                            <div class="p-5 flex flex-col flex-grow">
+                                <h4 class="text-xl font-bold text-white mb-2">${product.name}</h4>
+                                <p class="text-gray-400 text-sm mb-4 flex-grow">${product.description}</p>
+                                <div class="mt-auto pt-4">
+                                     <p class="text-lg font-bold text-white mb-3">${product.priceFormatted} / unidad</p>
+                                     <div class="flex items-center space-x-2">
+                                        <input type="number" id="qty-${product.id}" min="1" value="1" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-20 p-2 text-center">
+                                        <button data-product-id="${product.id}" class="add-to-cart-btn w-full bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500">
+                                            Agregar
+                                        </button>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            };
+            
+            const renderCart = () => {
+                cartItemsContainer.innerHTML = '';
+                if (cart.length === 0) {
+                    emptyCartMessage.classList.remove('hidden');
+                } else {
+                    emptyCartMessage.classList.add('hidden');
+                    cart.forEach(item => {
+                        const itemTotalPrice = (item.price * item.quantity).toLocaleString('es-CO');
+                        cartItemsContainer.innerHTML += `
+                            <div class="flex items-center justify-between py-4 border-b border-gray-700">
+                                <div class="flex items-center">
+                                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4" onerror="this.onerror=null;this.src='https://placehold.co/100x100/2d2d2d/9ca3af?text=Imagen';">
+                                    <div>
+                                        <p class="font-semibold text-white">${item.name}</p>
+                                        <p class="text-sm text-gray-400">${item.priceFormatted} c/u</p>
+                                        <p class="text-lg font-bold text-green-400 mt-1">$${itemTotalPrice}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <button data-id="${item.id}" class="decrease-qty w-8 h-8 flex items-center justify-center bg-gray-700 rounded-full font-bold hover:bg-gray-600 transition-colors">-</button>
+                                    <span class="font-semibold w-6 text-center text-lg">${item.quantity}</span>
+                                    <button data-id="${item.id}" class="increase-qty w-8 h-8 flex items-center justify-center bg-gray-700 rounded-full font-bold hover:bg-gray-600 transition-colors">+</button>
+                                </div>
+                            </div>`;
+                    });
+                }
+                updateCartInfo();
+            };
+
+            const updateCartInfo = () => {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                cartCount.textContent = totalItems;
+                cartSubtotal.textContent = `$${subtotal.toLocaleString('es-CO')}`;
+                
+                if (totalItems > 0 && totalItems < MIN_ORDER_QUANTITY) {
+                    minOrderMessage.classList.remove('hidden');
+                    checkoutButton.disabled = true;
+                } else {
+                    minOrderMessage.classList.add('hidden');
+                    checkoutButton.disabled = cart.length === 0;
+                }
+            };
+            
+            const addToCart = (productId) => {
+                const qtyInput = document.getElementById(`qty-${productId}`);
+                const quantity = parseInt(qtyInput.value);
+
+                if (isNaN(quantity) || quantity <= 0) {
+                    showToastMessage('Por favor, ingresa una cantidad válida.', true);
+                    return;
+                }
+
+                const product = products.find(p => p.id === productId);
+                const existingItem = cart.find(item => item.id === productId);
+
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    cart.push({ ...product, quantity: quantity });
+                }
+                
+                qtyInput.value = '1';
+                renderCart();
+                showToastMessage(`¡${quantity} x ${product.name} añadido(s)!`);
+            };
+            
+            const updateQuantity = (productId, change) => {
+                const itemInCart = cart.find(item => item.id === productId);
+                if (itemInCart) {
+                    itemInCart.quantity += change;
+                    if (itemInCart.quantity <= 0) {
+                        cart = cart.filter(item => item.id !== productId);
+                    }
+                }
+                renderCart();
+            };
+            
+            const showToastMessage = (message, isError = false) => {
+                toastMessage.innerHTML = `<p>${message}</p>`;
+                toastMessage.className = `fixed bottom-5 right-5 text-white py-3 px-5 rounded-lg shadow-lg transform transition-all duration-500 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+                toastMessage.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => {
+                    toastMessage.classList.add('opacity-0', 'translate-y-10');
+                }, 3000);
+            };
+
+            const openCart = () => {
+                cartModal.classList.remove('hidden');
+                setTimeout(() => {
+                    cartModal.classList.remove('opacity-0');
+                    cartContent.classList.remove('translate-x-full');
+                }, 10);
+            };
+
+            const closeCart = () => {
+                cartContent.classList.add('translate-x-full');
+                setTimeout(() => {
+                    cartModal.classList.add('hidden');
+                }, 300);
+            };
+
+            const showOrderConfirmationModal = () => {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                summaryTotalItems.textContent = `${totalItems} unidades`;
+                summarySubtotal.textContent = `$${subtotal.toLocaleString('es-CO')}`;
+
+                orderConfirmationModal.classList.remove('hidden');
+                setTimeout(() => {
+                    orderConfirmationModal.classList.remove('opacity-0');
+                    orderConfirmationContent.classList.remove('opacity-0', 'scale-95');
+                }, 10);
+            };
+
+             const closeOrderConfirmationModal = () => {
+                orderConfirmationContent.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    orderConfirmationModal.classList.add('hidden');
+                }, 300);
+            };
+
+            // Event Listeners
+            productList.addEventListener('click', e => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    addToCart(parseInt(e.target.dataset.productId));
+                }
+            });
+
+            cartButton.addEventListener('click', openCart);
+            closeCartButton.addEventListener('click', closeCart);
+            cartModal.addEventListener('click', e => e.target === cartModal && closeCart());
+            
+            cartItemsContainer.addEventListener('click', e => {
+                const id = parseInt(e.target.dataset.id);
+                if (e.target.classList.contains('increase-qty')) updateQuantity(id, 1);
+                if (e.target.classList.contains('decrease-qty')) updateQuantity(id, -1);
+            });
+            
+            checkoutButton.addEventListener('click', () => {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                if (cart.length > 0 && totalItems >= MIN_ORDER_QUANTITY) {
+                    showOrderConfirmationModal();
+                    closeCart();
+                    cart = [];
+                    renderCart();
+                } else {
+                    showToastMessage(`Debes pedir al menos ${MIN_ORDER_QUANTITY} unidades.`, true);
+                }
+            });
+
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                showToastMessage('¡Gracias por tu mensaje! Te contactaremos pronto.');
+                contactForm.reset();
+            });
+
+            closeConfirmationModalButton.addEventListener('click', closeOrderConfirmationModal);
+            orderConfirmationModal.addEventListener('click', e => e.target === orderConfirmationModal && closeOrderConfirmationModal());
+
+            // Initial Render
+            renderProducts();
+            renderCart();
+        });
+    </script>
+</body>
+</html>
+
