@@ -1,0 +1,74 @@
+[
+    { 
+        "id": 1, 
+        "name": "Granizado de Maracuyá",
+        "category": "Frutal", 
+        "description": "Refrescante y tropical, el equilibrio perfecto entre dulce y ácido. 100% natural.", 
+        "price": 1700, 
+        "priceFormatted": "$1,700", 
+        "image": "img/Granizado de maracuya.webp" 
+    },
+    { 
+        "id": 2, 
+        "name": "Granizado de Oreo",
+        "category": "Cremoso", 
+        "description": "Cremoso y delicioso, con trozos de galleta Oreo real. Un favorito instantáneo.", 
+        "price": 1700, 
+        "priceFormatted": "$1,700", 
+        "image": "img/Granizado de  oreo.webp" 
+    },
+    { 
+        "id": 3, 
+        "name": "Granizado de Mora",
+        "category": "Frutal", 
+        "description": "Hecho con moras frescas de la región. Lleno de antioxidantes y un sabor inigualable.", 
+        "price": 1700, 
+        "priceFormatted": "$1,700", 
+        "image": "img/Granizado de  mora.webp" 
+    },
+    { 
+        "id": 4, 
+        "name": "Granizado de Guanábana",
+        "category": "Frutal", 
+        "description": "Exótico y cremoso, el sabor auténtico de una de las frutas favoritas de Colombia.", 
+        "price": 1700, 
+        "priceFormatted": "$1,700", 
+        "image": "img/Granizado de guanabana.webp" 
+    },
+    { 
+        "id": 5, 
+        "name": "Granizado de Milo",
+        "category": "Cremoso", 
+        "description": "La energía y el sabor inconfundible de Milo en una versión helada y deliciosa.", 
+        "price": 1700, 
+        "priceFormatted": "$1,700", 
+        "image": "img/Granizados de milo.webp" 
+    },
+    { 
+        "id": 6, 
+        "name": "Granizado de Café",
+        "category": "Cremoso", 
+        "description": "El intenso y aromático sabor del café de nuestra tierra, perfecto para recargar energías.", 
+        "price": 1700, 
+        "priceFormatted": "$1,700", 
+        "image": "img/Granizados de cafe.webp" 
+    },
+    { 
+        "id": 7, 
+        "name": "Granizado de Fresa",
+        "category": "Cremoso", 
+        "description": "El rico y cremosito sabor de nuestro granizado de Fresa en leche va a encantarte .", 
+        "price": 1700, 
+        "priceFormatted": "$1,700", 
+        "image": "img/Granizado de fresa.webp" 
+    },
+    { 
+        "id": 8, 
+        "name": "Granizado de lulo",
+        "category": "Frutal", 
+        "description": "EL Granizado de lulo te va a encantare porque convina ese acido con ese dulcesito saludable .", 
+        "price": 1700, 
+        "priceFormatted": "$1,700", 
+        "image": "img/granizado de lulo.webp" 
+    }
+]

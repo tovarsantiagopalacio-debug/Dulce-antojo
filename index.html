@@ -1,434 +1,433 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dulce Antojo - Pedidos Mayoristas</title>
+    <meta name="description" content="Dulce Antojo ofrece granizados 100% naturales para pedidos mayoristas. Ideales para gimnasios, cafés y negocios en el Eje Cafetero. ¡Aumenta tus ventas!">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Se agrega la nueva tipografía "Poppins" para los títulos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0A0A0A;
-            color: #E5E7EB;
-            scroll-behavior: smooth;
-            cursor: none; /* Oculta el cursor por defecto para reemplazarlo */
-            overflow-x: hidden; /* Previene el desbordamiento horizontal por el fondo */
-        }
-        /* Nueva clase para la tipografía de los títulos */
-        .font-heading {
-            font-family: 'Poppins', sans-serif;
-        }
-        .hero-bg {
-            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('img/portada.png');
-            background-size: cover;
-            background-position: center;
-        }
-        .modal-backdrop, .order-confirmation-backdrop, .product-modal-backdrop, #lightbox-modal {
-            transition: opacity 0.3s ease-in-out;
-            backdrop-filter: blur(10px); /* Efecto Glassmorphism */
-        }
-        .modal-content, .order-confirmation-content, .product-modal-content {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1F2937; }
-        ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6B7280; }
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
-        details > summary .plus-icon { transition: transform 0.2s ease-in-out; }
-        details[open] > summary .plus-icon { transform: rotate(45deg); }
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .reveal-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        #scroll-to-top-btn {
-            transition: opacity 0.3s, transform 0.3s;
-        }
-        .glowing-btn::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2), transparent 70%);
-            transform: scale(0); transition: transform 0.4s ease; opacity: 0; border-radius: 9999px;
-        }
-        .glowing-btn:hover::before { transform: scale(2.5); opacity: 1; }
-
-        /* Estilos para el cursor personalizado y su estela */
-        #cursor-dot, #cursor-outline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-        }
-        #cursor-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #6EE7B7; /* Color menta */
-        }
-        #cursor-outline {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #6EE7B7;
-            transition: transform 0.15s ease-out, border-color 0.2s ease-out; /* Velocidad mejorada */
-        }
-
-        /* Títulos con gradiente animado */
-        .animated-gradient-text {
-            background: linear-gradient(90deg, #ffffff, #6EE7B7, #ffffff);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradient-flow 5s linear infinite;
-        }
-        @keyframes gradient-flow {
-            0% { background-position: 200% center; }
-            100% { background-position: 0% center; }
-        }
-
-        /* Preloader */
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0A0A0A;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s ease-out;
-        }
-        .loader-icon {
-            width: 60px;
-            height: 60px;
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
-        }
-
-        /* Fondo dinámico Aurora */
-        .aurora-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-        .aurora-background::before, .aurora-background::after {
-            content: '';
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(110, 231, 183, 0.15) 0%, rgba(110, 231, 183, 0) 60%);
-            border-radius: 50%;
-            filter: blur(100px);
-            will-change: transform;
-        }
-        .aurora-background::before {
-            top: -20%;
-            left: -20%;
-            animation: move-aurora1 20s infinite linear alternate;
-        }
-        .aurora-background::after {
-            bottom: -20%;
-            right: -20%;
-            animation: move-aurora2 25s infinite linear alternate;
-        }
-        @keyframes move-aurora1 {
-            from { transform: translate(-20%, -20%) rotate(0deg); }
-            to { transform: translate(20%, 20%) rotate(180deg); }
-        }
-        @keyframes move-aurora2 {
-            from { transform: translate(20%, 20%) rotate(0deg); }
-            to { transform: translate(-20%, -20%) rotate(-180deg); }
-        }
-        .gallery-item img {
-            transition: transform 0.3s ease-out;
-        }
-        .gallery-item:hover img {
-            transform: scale(1.05);
-        }
-        
-        /* Estilos para animación Fly-to-Cart */
-        .flying-image {
-            position: fixed;
-            z-index: 10000;
-            border-radius: 50%;
-            transition: all 0.7s cubic-bezier(0.55, -0.44, 0.95, 0.7);
-        }
-
-        /* Estilos para el enlace de navegación activo */
-        .active-nav-link {
-            color: #6EE7B7; /* Color menta */
-            transform: scale(1.1);
-        }
-    </style>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="text-gray-200">
 
-    <!-- Preloader -->
     <div id="preloader">
-        <svg class="loader-icon text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0c-.454-.303-.977-.454-1.5-.454V5.546c.523 0 1.046-.151 1.5-.454a2.704 2.704 0 013 0 2.704 2.704 0 003 0 2.704 2.704 0 013 0 2.704 2.704 0 003 0c.454.303.977.454 1.5.454v10z"></path></svg>
+        <svg class="loader-icon text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0c-.454-.303-.977-.454-1.5-.454V5.546c.523 0 1.046-.151 1.5-.454a2.704 2.704 0 013 0 2.704 2.704 0 003 0 2.704 2.704 0 013 0 2.704 2.704 0 003 0c.454.303.977.454 1.5.454v10z">
+            </path>
+        </svg>
     </div>
 
-    <!-- Fondo Aurora -->
     <div class="aurora-background"></div>
 
-    <!-- Cursor personalizado -->
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
 
-    <!-- =========== Header =========== -->
     <header class="bg-black/70 backdrop-blur-lg border-b border-gray-800 sticky top-0 z-40">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0c-.454-.303-.977-.454-1.5-.454V5.546c.523 0 1.046-.151 1.5-.454a2.704 2.704 0 013 0 2.704 2.704 0 003 0 2.704 2.704 0 013 0 2.704 2.704 0 003 0c.454.303.977.454 1.5.454v10z"></path></svg>
+                <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0c-.454-.303-.977-.454-1.5-.454V5.546c.523 0 1.046-.151 1.5-.454a2.704 2.704 0 013 0 2.704 2.704 0 003 0 2.704 2.704 0 013 0 2.704 2.704 0 003 0c.454.303.977.454 1.5.454v10z">
+                    </path>
+                </svg>
                 <h1 class="text-2xl font-bold text-white tracking-wide font-heading">Dulce Antojo</h1>
             </div>
-            <nav id="main-nav" class="hidden md:flex space-x-8">
+
+            <nav id="main-nav"
+                class="hidden md:flex md:items-center md:space-x-8 absolute md:relative top-full left-0 w-full md:w-auto bg-black/90 md:bg-transparent backdrop-blur-lg md:backdrop-blur-none flex-col md:flex-row items-center space-y-4 md:space-y-0 py-8 md:py-0 z-40">
                 <a href="#inicio" class="text-gray-300 hover:text-emerald-400 transition font-medium">Inicio</a>
-                <a href="#proceso" class="text-gray-300 hover:text-emerald-400 transition font-medium">Nuestro Proceso</a>
+                <a href="#proceso" class="text-gray-300 hover:text-emerald-400 transition font-medium">Nuestro
+                    Proceso</a>
                 <a href="#nosotros" class="text-gray-300 hover:text-emerald-400 transition font-medium">Nosotros</a>
+                <a href="#testimonios"
+                    class="text-gray-300 hover:text-emerald-400 transition font-medium">Testimonios</a>
                 <a href="#productos" class="text-gray-300 hover:text-emerald-400 transition font-medium">Catálogo</a>
                 <a href="#galeria" class="text-gray-300 hover:text-emerald-400 transition font-medium">Galería</a>
                 <a href="#faq" class="text-gray-300 hover:text-emerald-400 transition font-medium">FAQ</a>
                 <a href="#contacto" class="text-gray-300 hover:text-emerald-400 transition font-medium">Contacto</a>
             </nav>
+
             <div class="flex items-center space-x-4">
-                <button id="cart-button" class="relative flex items-center bg-emerald-500 text-white px-4 py-2 rounded-full hover:bg-emerald-600 transition duration-300 font-bold glowing-btn overflow-hidden">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path></svg>
+                <button id="cart-button"
+                    class="relative flex items-center bg-emerald-500 text-white px-4 py-2 rounded-full hover:bg-emerald-600 transition duration-300 font-bold glowing-btn overflow-hidden">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z">
+                        </path>
+                    </svg>
                     <span>Pedido (<span id="cart-count">0</span>)</span>
                 </button>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none" aria-label="Abrir menú">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- =========== Main Content =========== -->
     <main class="container mx-auto px-4 py-8">
 
-        <section id="inicio" class="hero-bg rounded-3xl text-white p-8 md:p-16 flex flex-col items-center justify-center text-center mb-20 min-h-[500px] md:min-h-[600px] reveal-on-scroll">
+        <section id="inicio"
+            class="hero-bg rounded-3xl text-white p-8 md:p-16 flex flex-col items-center justify-center text-center mb-20 min-h-[500px] md:min-h-[600px] reveal-on-scroll">
             <div class="max-w-4xl">
-                <h2 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter font-heading">
+                <h2
+                    class="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter font-heading">
                     <span class="animated-gradient-text">El Sabor que Impulsa tu Negocio</span>
                 </h2>
-                <p class="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-gray-300">Ofrece a tus clientes granizados 100% naturales, sin azúcar y deliciosos. Aumenta tus ventas y fideliza al mercado fitness.</p>
-                <a href="#productos" class="bg-emerald-500 text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-emerald-600 transition duration-300 transform hover:scale-105 glowing-btn overflow-hidden relative">Ver Catálogo</a>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-gray-300">Ofrece a tus clientes granizados
+                    100% naturales, sin azúcar y deliciosos. Aumenta tus ventas y fideliza al mercado fitness.</p>
+                <a href="#productos"
+                    class="bg-emerald-500 text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-emerald-600 transition duration-300 transform hover:scale-105 glowing-btn overflow-hidden relative">Ver
+                    Catálogo</a>
             </div>
         </section>
 
-        <!-- Nueva Sección: Nuestro Proceso -->
         <section id="proceso" class="mb-20 reveal-on-scroll">
-            <h3 class="text-4xl font-heading font-bold text-center text-white mb-16 tracking-tight">De la Finca a tu Negocio: <span class="animated-gradient-text">Nuestra Promesa de Calidad</span></h3>
+            <h3 class="text-4xl font-heading font-bold text-center text-white mb-16 tracking-tight">De la Finca a tu
+                Negocio: <span class="animated-gradient-text">Nuestra Promesa de Calidad</span></h3>
             <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 text-center">
-                <!-- Step 1 -->
                 <div class="flex flex-col items-center">
-                    <div class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4">
-                        <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <div
+                        class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4">
+                        <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
                     </div>
                     <h4 class="text-xl font-semibold font-heading text-white mb-2">1. Fruta Local</h4>
-                    <p class="text-gray-400">Seleccionamos a mano las mejores frutas de productores del Eje Cafetero, garantizando frescura y apoyando nuestra comunidad.</p>
+                    <p class="text-gray-400">Seleccionamos a mano las mejores frutas de productores del Eje Cafetero,
+                        garantizando frescura y apoyando nuestra comunidad.</p>
                 </div>
-                 <!-- Step 2 -->
-                 <div class="flex flex-col items-center">
-                    <div class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4">
-                        <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 4h5m-5 4h5"></path></svg>
+                <div class="flex flex-col items-center">
+                    <div
+                        class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4">
+                        <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 4h5m-5 4h5">
+                            </path>
+                        </svg>
                     </div>
                     <h4 class="text-xl font-semibold font-heading text-white mb-2">2. Producción Artesanal</h4>
-                    <p class="text-gray-400">En nuestro centro de producción, transformamos la fruta en granizados deliciosos, sin conservantes y endulzados solo con Stevia.</p>
+                    <p class="text-gray-400">En nuestro centro de producción, transformamos la fruta en granizados
+                        deliciosos, sin conservantes y endulzados solo con Stevia.</p>
                 </div>
-                <!-- Step 3 -->
-                 <div class="flex flex-col items-center">
-                    <div class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4">
-                        <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="flex flex-col items-center">
+                    <div
+                        class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4">
+                        <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                     </div>
                     <h4 class="text-xl font-semibold font-heading text-white mb-2">3. Control de Calidad</h4>
-                    <p class="text-gray-400">Cada lote pasa por un riguroso control de calidad para asegurar el sabor y la textura perfecta que nos caracteriza.</p>
+                    <p class="text-gray-400">Cada lote pasa por un riguroso control de calidad para asegurar el sabor y
+                        la textura perfecta que nos caracteriza.</p>
                 </div>
-                <!-- Step 4 -->
-                 <div class="flex flex-col items-center">
-                    <div class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4">
-                         <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path></svg>
+                <div class="flex flex-col items-center">
+                    <div
+                        class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4">
+                        <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path>
+                        </svg>
                     </div>
                     <h4 class="text-xl font-semibold font-heading text-white mb-2">4. Logística de Frío</h4>
-                    <p class="text-gray-400">Garantizamos la cadena de frío con un transporte especializado, asegurando que el producto llegue a tu negocio en perfectas condiciones.</p>
+                    <p class="text-gray-400">Garantizamos la cadena de frío con un transporte especializado, asegurando
+                        que el producto llegue a tu negocio en perfectas condiciones.</p>
                 </div>
             </div>
         </section>
-
-        <!-- Nueva Sección: Conoce al Fundador -->
         <section id="nosotros" class="mb-20 reveal-on-scroll">
-            <div class="bg-gray-900/50 rounded-2xl border border-gray-800 p-8 md:p-12 grid md:grid-cols-3 gap-12 items-center">
+            <div
+                class="bg-gray-900/50 rounded-2xl border border-gray-800 p-8 md:p-12 grid md:grid-cols-3 gap-12 items-center">
                 <div class="md:col-span-1">
-                    <img src="img/WhatsApp Image 2025-09-25 at 21.24.36_160dcdd4.jpg" alt="Fundador Santiago Palacio Tovar" class="rounded-full mx-auto shadow-lg">
+                    <img src="img/WhatsApp Image 2025-09-25 at 21.24.36_160dcdd4.jpg"
+                        alt="Fundador Santiago Palacio Tovar" class="rounded-full mx-auto shadow-lg">
                 </div>
                 <div class="md:col-span-2 text-left">
-                     <h3 class="text-4xl font-heading font-bold text-white mb-6 tracking-tight">Conoce al <span class="animated-gradient-text">Fundador</span></h3>
-                     <p class="text-gray-400 mb-4 leading-relaxed">"Hola, soy Santiago Palacio Tovar. Creé 'Dulce Antojo' a partir de una pasión por los sabores auténticos de nuestra tierra y un compromiso con un estilo de vida saludable. Mi objetivo es simple: crear alianzas de valor con negocios locales como el tuyo, entregándote un producto de calidad superior que tus clientes amarán."</p>
-                     <p class="font-semibold text-emerald-400">- Santiago Palacio Tovar, Fundador de Dulce Antojo</p>
+                    <h3 class="text-4xl font-heading font-bold text-white mb-6 tracking-tight">Conoce al <span
+                            class="animated-gradient-text">Fundador</span></h3>
+                    <p class="text-gray-400 mb-4 leading-relaxed">"Hola, soy Santiago Palacio Tovar. Creé 'Dulce Antojo'
+                        a partir de una pasión por los sabores auténticos de nuestra tierra y un compromiso con un
+                        estilo de vida saludable. Mi objetivo es simple: crear alianzas de valor con negocios locales
+                        como el tuyo, entregándote un producto de calidad superior que tus clientes amarán."</p>
+                    <p class="font-semibold text-emerald-400">- Santiago Palacio Tovar, Fundador de Dulce Antojo</p>
                 </div>
             </div>
         </section>
-        
-        <!-- Nueva Sección: Nuestros Socios -->
         <section class="mb-20 reveal-on-scroll">
-            <h3 class="text-4xl font-heading font-bold text-center text-white mb-16 tracking-tight">Ellos <span class="animated-gradient-text">Confían en Nosotros</span></h3>
+            <h3 class="text-4xl font-heading font-bold text-center text-white mb-16 tracking-tight">Ellos <span
+                    class="animated-gradient-text">Confían en Nosotros</span></h3>
             <div class="max-w-5xl mx-auto flex flex-wrap justify-center items-center gap-x-12 gap-y-8">
-                <img src="https://placehold.co/150x50/FFFFFF/111827?text=CorpoFit+Gym" alt="Logo Socio 1" class="h-10 opacity-60 hover:opacity-100 transition">
-                <img src="https://placehold.co/150x50/FFFFFF/111827?text=Café+del+Parque" alt="Logo Socio 2" class="h-10 opacity-60 hover:opacity-100 transition">
-                <img src="https://placehold.co/150x50/FFFFFF/111827?text=NaturaTienda" alt="Logo Socio 3" class="h-10 opacity-60 hover:opacity-100 transition">
-                <img src="https://placehold.co/150x50/FFFFFF/111827?text=UniSaludable" alt="Logo Socio 4" class="h-10 opacity-60 hover:opacity-100 transition">
-                <img src="https://placehold.co/150x50/FFFFFF/111827?text=SuperFresco" alt="Logo Socio 5" class="h-10 opacity-60 hover:opacity-100 transition">
+                <img src="https://placehold.co/150x50/FFFFFF/111827?text=CorpoFit+Gym" alt="Logo Socio 1"
+                    class="h-10 opacity-60 hover:opacity-100 transition">
+                <img src="https://placehold.co/150x50/FFFFFF/111827?text=Café+del+Parque" alt="Logo Socio 2"
+                    class="h-10 opacity-60 hover:opacity-100 transition">
+                <img src="https://placehold.co/150x50/FFFFFF/111827?text=NaturaTienda" alt="Logo Socio 3"
+                    class="h-10 opacity-60 hover:opacity-100 transition">
+                <img src="https://placehold.co/150x50/FFFFFF/111827?text=UniSaludable" alt="Logo Socio 4"
+                    class="h-10 opacity-60 hover:opacity-100 transition">
+                <img src="https://placehold.co/150x50/FFFFFF/111827?text=SuperFresco" alt="Logo Socio 5"
+                    class="h-10 opacity-60 hover:opacity-100 transition">
             </div>
         </section>
-
-        <!-- Nueva Sección: Sabores de Temporada -->
-        <section class="mb-20 reveal-on-scroll">
-             <h3 class="text-4xl font-heading font-bold text-center text-white mb-16 tracking-tight">Edición Limitada: <span class="animated-gradient-text">Sabores de Temporada</span></h3>
-             <div class="grid md:grid-cols-2 gap-8 items-center">
-                 <div class="bg-gray-900/50 rounded-2xl border border-gray-800 p-8 text-center flex flex-col justify-center h-full">
-                     <span class="text-emerald-400 font-semibold tracking-widest uppercase">NUEVO LANZAMIENTO</span>
-                     <h4 class="text-3xl font-heading font-bold text-white my-3">Granizado de Lulo</h4>
-                     <p class="text-gray-400 max-w-sm mx-auto">Experimenta la acidez y el sabor único del lulo, una joya de nuestras montañas. ¡Disponible solo por tiempo limitado!</p>
-                 </div>
-                 <div class="rounded-2xl overflow-hidden">
-                     <img src="img/granizado de lulo.png.png" alt="Granizado de Lulo" class="w-full h-full object-cover">
-                 </div>
-             </div>
-        </section>
-
-
-        <!-- Productos -->
-        <section id="productos" class="mb-20 reveal-on-scroll">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-10">
-                <h3 class="text-4xl font-heading font-bold text-white mb-6 md:mb-0 tracking-tight animated-gradient-text">Nuestro Catálogo</h3>
-                <div class="relative w-full md:w-auto">
-                    <input type="text" id="search-bar" placeholder="Buscar por sabor..." class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-full focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 p-3 transition" />
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <section id="testimonios" class="mb-20 reveal-on-scroll">
+            <h3 class="text-4xl font-heading font-bold text-center text-white mb-16 tracking-tight">Lo que dicen <span
+                    class="animated-gradient-text">Nuestros Socios</span></h3>
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
+                <div class="bg-gray-900/50 border border-gray-800 rounded-2xl p-8 flex flex-col">
+                    <svg class="w-10 h-10 text-emerald-500/50 mb-4" fill="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M13 14.725c0-5.141 3.892-10.519 10-11.725l-1.562 5.512c-3.123.931-5.438 4.1-5.438 7.313h3c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5h-3c-2.481 0-4.5-2.019-4.5-4.5v-1.087zM4.5 18.5c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5h-3c-2.481 0-4.5-2.019-4.5-4.5v-1.087c0-5.141 3.892-10.519 10-11.725l-1.562 5.512c-3.123.931-5.438 4.1-5.438 7.313h3z">
+                        </path>
+                    </svg>
+                    <p class="text-gray-400 mb-6 flex-grow italic">"Desde que incluimos los granizados de Dulce Antojo,
+                        nuestras ventas post-entreno se han disparado. A nuestros clientes les encanta que sean
+                        saludables y deliciosos. ¡La mejor decisión!"</p>
+                    <div class="flex items-center mt-auto">
+                        <img src="https://placehold.co/60x60/7F9CF5/FFFFFF?text=JP" alt="Foto de Juan Pérez"
+                            class="w-14 h-14 rounded-full mr-4 border-2 border-gray-700">
+                        <div>
+                            <p class="font-bold text-white">Juan Pérez</p>
+                            <p class="text-sm text-gray-500">Dueño, CorpoFit Gym</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-900/50 border border-gray-800 rounded-2xl p-8 flex flex-col">
+                    <svg class="w-10 h-10 text-emerald-500/50 mb-4" fill="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M13 14.725c0-5.141 3.892-10.519 10-11.725l-1.562 5.512c-3.123.931-5.438 4.1-5.438 7.313h3c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5h-3c-2.481 0-4.5-2.019-4.5-4.5v-1.087zM4.5 18.5c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5h-3c-2.481 0-4.5-2.019-4.5-4.5v-1.087c0-5.141 3.892-10.519 10-11.725l-1.562 5.512c-3.123.931-5.438 4.1-5.438 7.313h3z">
+                        </path>
+                    </svg>
+                    <p class="text-gray-400 mb-6 flex-grow italic">"La calidad de la fruta es innegable. Nuestros
+                        clientes aprecian los productos locales y naturales. La logística de frío siempre es impecable,
+                        llegan en perfecto estado."</p>
+                    <div class="flex items-center mt-auto">
+                        <img src="https://placehold.co/60x60/FBBF24/FFFFFF?text=AM" alt="Foto de Ana María"
+                            class="w-14 h-14 rounded-full mr-4 border-2 border-gray-700">
+                        <div>
+                            <p class="font-bold text-white">Ana María</p>
+                            <p class="text-sm text-gray-500">Gerente, Café del Parque</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="product-list" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <!-- Los productos se insertarán aquí desde JS -->
-            </div>
-            <p id="no-results-message" class="text-center text-gray-500 mt-10 text-lg hidden">No se encontraron sabores que coincidan con tu búsqueda.</p>
         </section>
-        
-        <!-- Nueva Sección: Galería -->
+
+        <section id="productos" class="mb-20 reveal-on-scroll">
+            <h3
+                class="text-4xl font-heading font-bold text-center text-white mb-6 tracking-tight animated-gradient-text">
+                Nuestro Catálogo</h3>
+
+            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+                <div id="category-filters"
+                    class="flex flex-wrap justify-center gap-2 bg-gray-900/50 p-2 rounded-full border border-gray-800">
+                    <button class="category-btn active-category" data-category="Todos">Todos</button>
+                    <button class="category-btn" data-category="Frutal">Frutales</button>
+                    <button class="category-btn" data-category="Cremoso">Cremosos</button>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <select id="sort-products"
+                            class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-full focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3 appearance-none pl-4 pr-8">
+                            <option value="default">Ordenar por</option>
+                            <option value="price-asc">Precio: Menor a Mayor</option>
+                            <option value="price-desc">Precio: Mayor a Menor</option>
+                            <option value="name-asc">Nombre: A-Z</option>
+                            <option value="name-desc">Nombre: Z-A</option>
+                        </select>
+                    </div>
+
+                    <div class="relative w-full md:w-auto md:max-w-xs">
+                        <input type="text" id="search-bar" placeholder="Buscar por sabor..."
+                            class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-full focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 p-3 transition" />
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="product-list" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            </div>
+
+            <div id="no-results-message" class="text-center text-gray-500 mt-10 text-lg hidden">
+                <p>No se encontraron sabores que coincidan con tu búsqueda.</p>
+                <button id="clear-search-btn" class="mt-2 text-emerald-400 hover:text-emerald-300 font-semibold">Mostrar
+                    todos los productos</button>
+            </div>
+        </section>
+
         <section id="galeria" class="mb-20 reveal-on-scroll">
-            <h3 class="text-4xl font-heading font-bold text-white mb-12 text-center tracking-tight animated-gradient-text">Nuestra Calidad en Imágenes</h3>
+            <h3
+                class="text-4xl font-heading font-bold text-white mb-12 text-center tracking-tight animated-gradient-text">
+                Nuestra Calidad en Imágenes</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="gallery-item rounded-2xl overflow-hidden cursor-pointer">
-                    <img src="img/gente disfrutando de granizados en la playa.png" alt="Galería Dulce Antojo 1"
+                    <img src="img/gente disfrutando de granizados en la playa.webp" loading="lazy"
+                        alt="Personas disfrutando granizados en un ambiente soleado"
                         class="w-full h-full object-cover">
                 </div>
                 <div class="gallery-item rounded-2xl overflow-hidden cursor-pointer row-span-2">
-                    <img src="img/gente granizados gym.png" alt="Galería Dulce Antojo 2"
+                    <img src="img/gente granizados gym.webp" loading="lazy"
+                        alt="Jóvenes en un gimnasio bebiendo granizados saludables"
                         class="w-full h-full object-cover">
                 </div>
                 <div class="gallery-item rounded-2xl overflow-hidden cursor-pointer">
-                    <img src="img/granizados colegio.png" alt="Galería Dulce Antojo 3"
+                    <img src="img/granizados colegio.webp" loading="lazy"
+                        alt="Estudiantes con granizados en el patio de un colegio" class="w-full h-full object-cover">
+                </div>
+                <div class="gallery-item rounded-2xl overflow-hidden cursor-pointer">
+                    <img src="img/granizados estadio.webp" loading="lazy"
+                        alt="Aficionados en un estadio refrescándose con granizados"
                         class="w-full h-full object-cover">
                 </div>
                 <div class="gallery-item rounded-2xl overflow-hidden cursor-pointer">
-                    <img src="img/granizados estadio.png" alt="Galería Dulce Antojo 4"
-                        class="w-full h-full object-cover">
-                </div>
-                <div class="gallery-item rounded-2xl overflow-hidden cursor-pointer">
-                    <img src="img/granizados bugatti.png" alt="Galería Dulce Antojo 5"
-                        class="w-full h-full object-cover">
+                    <img src="img/granizados bugatti.webp" loading="lazy"
+                        alt="Granizados de lujo junto a un superdeportivo Bugatti" class="w-full h-full object-cover">
                 </div>
                 <div class="gallery-item rounded-2xl overflow-hidden cursor-pointer col-span-2">
-                    <img src="img/granizados ferrari.png" alt="Galería Dulce Antojo 6" class="w-full h-full object-cover">
+                    <img src="img/granizados ferrari.webp" loading="lazy"
+                        alt="Granizados de fresa y mora junto a un Ferrari rojo" class="w-full h-full object-cover">
                 </div>
-
-            
+            </div>
         </section>
-
-
-        <!-- FAQ Section -->
+        
         <section id="faq" class="mb-20 reveal-on-scroll">
-            <h3 class="text-4xl font-heading font-bold text-white mb-12 text-center tracking-tight animated-gradient-text">Resolviendo tus Dudas</h3>
+            <h3
+                class="text-4xl font-heading font-bold text-white mb-12 text-center tracking-tight animated-gradient-text">
+                Resolviendo tus Dudas</h3>
             <div class="max-w-3xl mx-auto space-y-4">
                 <details class="bg-gray-900/50 border border-gray-800 rounded-lg p-5 cursor-pointer">
                     <summary class="font-semibold text-lg flex justify-between items-center">
                         ¿Cuál es la vida útil de los granizados?
-                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
                     </summary>
-                    <p class="text-gray-400 mt-4 leading-relaxed">Nuestros granizados, al ser 100% naturales, tienen una vida útil recomendada de 3 meses en congelación a -18°C. Esto garantiza que el sabor y la textura se mantengan perfectos.</p>
+                    <p class="text-gray-400 mt-4 leading-relaxed">Nuestros granizados, al ser 100% naturales, tienen una
+                        vida útil recomendada de 3 meses en congelación a -18°C. Esto garantiza que el sabor y la
+                        textura se mantengan perfectos.</p>
                 </details>
                 <details class="bg-gray-900/50 border border-gray-800 rounded-lg p-5 cursor-pointer">
                     <summary class="font-semibold text-lg flex justify-between items-center">
                         ¿Qué métodos de pago aceptan?
-                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
                     </summary>
-                    <p class="text-gray-400 mt-4 leading-relaxed">Para el primer pedido, requerimos pago contra entrega. A partir del segundo pedido, ofrecemos la posibilidad de acceder a un crédito de 30 días, sujeto a estudio previo.</p>
+                    <p class="text-gray-400 mt-4 leading-relaxed">Para el primer pedido, requerimos pago contra entrega.
+                        A partir del segundo pedido, ofrecemos la posibilidad de acceder a un crédito de 30 días, sujeto
+                        a estudio previo.</p>
                 </details>
                 <details class="bg-gray-900/50 border border-gray-800 rounded-lg p-5 cursor-pointer">
                     <summary class="font-semibold text-lg flex justify-between items-center">
                         ¿El envío tiene algún costo?
-                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
                     </summary>
-                    <p class="text-gray-400 mt-4 leading-relaxed">Ofrecemos envío gratuito en Armenia para pedidos que superen las 50 unidades. Para pedidos menores o entregas en zonas aledañas, se calculará una tarifa de domicilio competitiva.</p>
+                    <p class="text-gray-400 mt-4 leading-relaxed">Ofrecemos envío gratuito en Armenia para pedidos que
+                        superen las 50 unidades. Para pedidos menores o entregas en zonas aledañas, se calculará una
+                        tarifa de domicilio competitiva.</p>
                 </details>
-                 <details class="bg-gray-900/50 border border-gray-800 rounded-lg p-5 cursor-pointer">
+                <details class="bg-gray-900/50 border border-gray-800 rounded-lg p-5 cursor-pointer">
                     <summary class="font-semibold text-lg flex justify-between items-center">
                         ¿Ofrecen material publicitario (POP)?
-                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <svg class="w-6 h-6 text-gray-400 plus-icon" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
                     </summary>
-                    <p class="text-gray-400 mt-4 leading-relaxed">¡Claro que sí! Con tu primer pedido incluimos un kit de material POP (habladores y afiches) sin costo para ayudarte a impulsar las ventas en tu punto.</p>
+                    <p class="text-gray-400 mt-4 leading-relaxed">¡Claro que sí! Con tu primer pedido incluimos un kit
+                        de material POP (habladores y afiches) sin costo para ayudarte a impulsar las ventas en tu
+                        punto.</p>
                 </details>
             </div>
         </section>
 
-        <!-- Contacto -->
         <section id="contacto" class="mb-16 reveal-on-scroll">
-            <h3 class="text-4xl font-heading font-bold text-white mb-8 text-center tracking-tight">Conviértete en <span class="animated-gradient-text">Socio</span></h3>
-            <p class="text-center text-gray-400 max-w-2xl mx-auto mb-12">¿Interesado en vender nuestros productos? Déjanos tus datos y nos pondremos en contacto contigo.</p>
-            <form id="contact-form" class="max-w-2xl mx-auto bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <h3 class="text-4xl font-heading font-bold text-white mb-8 text-center tracking-tight">Conviértete en <span
+                    class="animated-gradient-text">Socio</span></h3>
+            <p class="text-center text-gray-400 max-w-2xl mx-auto mb-12">¿Interesado en vender nuestros productos?
+                Déjanos tus datos y nos pondremos en contacto contigo.</p>
+
+            <form id="contact-form" action="https://formspree.io/f/xldpbzkg" method="POST"
+                class="max-w-2xl mx-auto bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label for="name" class="block mb-2 text-sm font-medium text-gray-400">Tu Nombre</label>
-                        <input type="text" id="name" class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3" placeholder="John Doe" required>
+                        <input type="text" id="name" name="name"
+                            class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3"
+                            placeholder="John Doe" required>
+                        <span id="name-error" class="error-message hidden mt-2"></span>
                     </div>
                     <div>
-                        <label for="business" class="block mb-2 text-sm font-medium text-gray-400">Nombre del Negocio</label>
-                        <input type="text" id="business" class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3" placeholder="Gimnasio Fit" required>
+                        <label for="business" class="block mb-2 text-sm font-medium text-gray-400">Nombre del
+                            Negocio</label>
+                        <input type="text" id="business" name="business_name"
+                            class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3"
+                            placeholder="Gimnasio Fit" required>
                     </div>
                 </div>
                 <div class="mb-6">
-                     <label for="email" class="block mb-2 text-sm font-medium text-gray-400">Correo Electrónico</label>
-                     <input type="email" id="email" class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3" placeholder="tu@negocio.com" required>
+                    <label for="email" class="block mb-2 text-sm font-medium text-gray-400">Correo Electrónico</label>
+                    <input type="email" id="email" name="email"
+                        class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3"
+                        placeholder="tu@negocio.com" required>
+                    <span id="email-error" class="error-message hidden mt-2"></span>
                 </div>
                 <div>
                     <label for="message" class="block mb-2 text-sm font-medium text-gray-400">Mensaje</label>
-                    <textarea id="message" rows="4" class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3" placeholder="Cuéntanos sobre tu negocio y qué te interesa..."></textarea>
+                    <textarea id="message" name="message" rows="4"
+                        class="bg-gray-800 border-2 border-gray-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-3"
+                        placeholder="Cuéntanos sobre tu negocio y qué te interesa..."></textarea>
                 </div>
-                <div class="text-right text-sm text-red-400 h-4 mt-2" id="form-error-message"></div>
-                <button type="submit" id="submit-button" class="mt-4 w-full bg-emerald-500 text-white py-4 rounded-full font-bold text-lg hover:bg-emerald-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-emerald-500 glowing-btn overflow-hidden relative">
-                    <span id="submit-button-text">Enviar Mensaje</span>
+
+                <button type="submit" id="submit-button"
+                    class="mt-8 w-full bg-emerald-500 text-white py-4 rounded-full font-bold text-lg hover:bg-emerald-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-emerald-500 glowing-btn overflow-hidden relative disabled:bg-gray-600 disabled:cursor-not-allowed">
+                    <span id="submit-button-text" class="relative z-10">Enviar Mensaje</span>
                 </button>
             </form>
         </section>
     </main>
-    
-    <!-- =========== Footer =========== -->
+
     <footer class="bg-black/50 text-white mt-12 border-t border-gray-800">
         <div class="container mx-auto px-4 py-10">
             <div class="grid md:grid-cols-3 gap-8 text-center md:text-left">
@@ -439,9 +438,23 @@
                 <div class="md:mx-auto">
                     <h4 class="font-semibold font-heading mb-3">Redes Sociales</h4>
                     <div class="flex justify-center md:justify-start space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg></a>
-                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.343 2.525c.636-.247 1.363-.416 2.427-.465C9.796 2.013 10.14 2 12.315 2zm-1.003 3.652c-1.144-.002-1.33.003-2.31.05-1.013.047-1.547.21-1.886.354a2.842 2.842 0 00-1.09.736 2.842 2.842 0 00-.736 1.09c-.143.34-.307.873-.354 1.886-.047.98-.052 1.166-.052 2.31s.005 1.33.052 2.31c.047 1.013.21 1.547.354 1.886.19.46.46.824.868 1.233.408.407.773.678 1.233.868.34.143.873.307 1.886.354.98.047 1.166.052 2.31.052s1.33-.005 2.31-.052c1.013-.047 1.547-.21 1.886-.354.46-.19.824-.46 1.233-.868.407-.408.678-.773.868-1.233.143-.34.307-.873.354-1.886.047-.98.052-1.166.052-2.31s-.005-1.33-.052-2.31c-.047-1.013-.21-1.547-.354-1.886a2.842 2.842 0 00-.868-1.233 2.842 2.842 0 00-1.233-.868c-.34-.143-.873-.307-1.886-.354-.98-.047-1.166-.052-2.31-.052zM12 8.243a3.757 3.757 0 100 7.514 3.757 3.757 0 000-7.514zm0 6.13c-1.31 0-2.373-1.063-2.373-2.373S10.69 9.627 12 9.627s2.373 1.063 2.373 2.373-1.063 2.373-2.373 2.373zm4.49-5.83a.9.9 0 100-1.8.9.9 0 000 1.8z" clip-rule="evenodd" /></svg></a>
-                         <a href="#" class="text-gray-400 hover:text-emerald-400 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition" aria-label="Facebook"><svg class="w-6 h-6"
+                                fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                                    clip-rule="evenodd" />
+                            </svg></a>
+                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition" aria-label="Instagram"><svg class="w-6 h-6"
+                                fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.343 2.525c.636-.247 1.363.416 2.427-.465C9.796 2.013 10.14 2 12.315 2zm-1.003 3.652c-1.144-.002-1.33.003-2.31.05-1.013.047-1.547.21-1.886.354a2.842 2.842 0 00-1.09.736 2.842 2.842 0 00-.736 1.09c-.143.34-.307.873-.354 1.886-.047.98-.052 1.166-.052 2.31s.005 1.33.052 2.31c.047 1.013.21 1.547.354 1.886.19.46.46.824.868 1.233.408.407.773.678 1.233.868.34.143.873.307 1.886.354.98.047 1.166.052 2.31.052s1.33-.005 2.31-.052c1.013-.047 1.547-.21 1.886-.354.46-.19.824-.46 1.233-.868.407-.408.678-.773.868-1.233.143-.34.307-.873-.354-1.886.047-.98.052-1.166-.052-2.31s-.005-1.33-.052-2.31c-.047-1.013-.21-1.547-.354-1.886a2.842 2.842 0 00-.868-1.233 2.842 2.842 0 00-1.233-.868c-.34-.143-.873-.307-1.886-.354-.98-.047-1.166-.052-2.31-.052zM12 8.243a3.757 3.757 0 100 7.514 3.757 3.757 0 000-7.514zm0 6.13c-1.31 0-2.373-1.063-2.373-2.373S10.69 9.627 12 9.627s2.373 1.063 2.373 2.373-1.063 2.373-2.373 2.373zm4.49-5.83a.9.9 0 100-1.8.9.9 0 000 1.8z"
+                                    clip-rule="evenodd" />
+                            </svg></a>
+                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition" aria-label="Twitter"><svg class="w-6 h-6"
+                                fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                            </svg></a>
                     </div>
                 </div>
             </div>
@@ -451,541 +464,124 @@
         </div>
     </footer>
 
-    <!-- =========== Product Modal =========== -->
-    <div id="product-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden product-modal-backdrop p-4">
-        <div id="product-modal-content" class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl transform scale-95 opacity-0 product-modal-content border border-gray-700 flex flex-col md:flex-row overflow-hidden">
-            <div class="w-full md:w-1/2">
-                <img id="modal-product-image" src="" alt="Product image" class="w-full h-full object-cover">
-            </div>
+    <div id="product-modal"
+        class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden product-modal-backdrop p-4"
+        role="dialog" aria-modal="true" aria-labelledby="modal-product-name">
+        <div id="product-modal-content"
+            class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl transform scale-95 opacity-0 product-modal-content border border-gray-700 flex flex-col md:flex-row overflow-hidden">
+            <div class="w-full md:w-1/2"><img id="modal-product-image" src="" alt="Imagen del producto"
+                    class="w-full h-full object-cover"></div>
             <div class="w-full md:w-1/2 p-8 flex flex-col">
                 <div class="flex justify-between items-start mb-4">
                     <h3 id="modal-product-name" class="text-3xl font-heading font-bold text-white"></h3>
-                    <button id="close-product-modal-button" class="text-gray-400 hover:text-white transition"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                    <button id="close-product-modal-button" class="text-gray-400 hover:text-white transition" aria-label="Cerrar modal"><svg
+                            class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg></button>
                 </div>
                 <p id="modal-product-description" class="text-gray-400 mb-6 flex-grow"></p>
                 <div class="mt-auto">
                     <p id="modal-product-price" class="text-3xl font-heading font-bold text-emerald-400 mb-6"></p>
                     <div class="flex items-center space-x-4">
-                         <input type="number" id="modal-product-qty" min="1" value="1" class="bg-gray-800 border-2 border-gray-700 text-white text-lg rounded-full focus:ring-emerald-500 focus:border-emerald-500 block w-24 p-3 text-center">
-                         <button id="modal-add-to-cart-btn" class="w-full bg-emerald-500 text-white font-semibold py-3 px-4 rounded-full hover:bg-emerald-600 transition duration-300 flex items-center justify-center glowing-btn overflow-hidden relative">
+                        <input type="number" id="modal-product-qty" min="1" value="1"
+                            class="bg-gray-800 border-2 border-gray-700 text-white text-lg rounded-full focus:ring-emerald-500 focus:border-emerald-500 block w-24 p-3 text-center"
+                            aria-label="Cantidad">
+                        <button id="modal-add-to-cart-btn"
+                            class="w-full bg-emerald-500 text-white font-semibold py-3 px-4 rounded-full hover:bg-emerald-600 transition duration-300 flex items-center justify-center glowing-btn overflow-hidden relative">
                             <span class="btn-text">Agregar al Pedido</span>
-                         </button>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <!-- =========== Carrito Modal =========== -->
-    <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 flex justify-end hidden modal-backdrop">
-        <div id="cart-content" class="bg-gray-900 text-white w-full max-w-md h-full shadow-2xl transform translate-x-full modal-content flex flex-col border-l border-gray-700">
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 flex justify-end hidden modal-backdrop" role="dialog"
+        aria-modal="true" aria-labelledby="cart-title">
+        <div id="cart-content"
+            class="bg-gray-900 text-white w-full max-w-md h-full shadow-2xl transform translate-x-full modal-content flex flex-col border-l border-gray-700">
             <div class="p-5 border-b border-gray-700 flex justify-between items-center">
-                <h3 class="text-2xl font-heading font-bold">Tu Pedido</h3>
-                <button id="close-cart-button" class="text-gray-400 hover:text-white transition"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                <h3 id="cart-title" class="text-2xl font-heading font-bold">Tu Pedido</h3>
+                <button id="close-cart-button" class="text-gray-400 hover:text-white transition" aria-label="Cerrar carrito"><svg
+                        class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg></button>
             </div>
             <div id="cart-items" class="p-5 flex-grow overflow-y-auto">
-                <div id="empty-cart-message" class="text-center text-gray-500 mt-10 flex flex-col items-center h-full justify-center">
-                    <svg class="w-20 h-20 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <div id="empty-cart-message"
+                    class="text-center text-gray-500 mt-10 flex flex-col items-center h-full justify-center">
+                    <svg class="w-20 h-20 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
                     <p class="mt-4 text-lg">Tu carrito está vacío.</p>
                     <p class="text-sm">Agrega productos para empezar.</p>
                 </div>
             </div>
             <div class="p-5 border-t border-gray-700 bg-gray-900/80">
-                 <div class="flex justify-between items-center mb-3 text-lg font-semibold">
+                <div class="flex justify-between items-center mb-3 text-lg font-semibold">
                     <span>Subtotal</span>
                     <span id="cart-subtotal">$0</span>
                 </div>
-                <p id="min-order-message" class="text-yellow-400 text-sm text-center mb-4 hidden">Se requiere un pedido mínimo de 20 unidades.</p>
-                <button id="checkout-button" class="w-full bg-emerald-500 text-white py-4 rounded-full font-bold text-lg hover:bg-emerald-600 transition duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed glowing-btn overflow-hidden relative">Finalizar Pedido</button>
+                <p id="min-order-message" class="text-yellow-400 text-sm text-center mb-4 hidden">Se requiere un pedido
+                    mínimo de 20 unidades.</p>
+                <button id="checkout-button"
+                    class="w-full bg-emerald-500 text-white py-4 rounded-full font-bold text-lg hover:bg-emerald-600 transition duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed glowing-btn overflow-hidden relative">Finalizar
+                    Pedido</button>
             </div>
         </div>
     </div>
-    
-    <!-- Toast Message -->
-    <div id="toast-message" class="fixed bottom-5 right-5 bg-emerald-500 text-white py-3 px-6 rounded-full shadow-lg opacity-0 transform translate-y-10 transition-all duration-500 z-50"></div>
 
-    <!-- Order Confirmation Modal -->
-    <div id="order-confirmation-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden order-confirmation-backdrop p-4">
-        <div id="order-confirmation-content" class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 text-center transform scale-95 opacity-0 order-confirmation-content border border-gray-700">
-            <div class="w-24 h-24 bg-emerald-500/10 border-2 border-emerald-500/30 rounded-full mx-auto flex items-center justify-center mb-6">
-                <svg class="w-16 h-16 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <div id="toast-message"
+        class="fixed bottom-5 right-5 bg-emerald-500 text-white py-3 px-6 rounded-full shadow-lg opacity-0 transform translate-y-10 transition-all duration-500 z-50">
+    </div>
+    
+    <div id="order-confirmation-modal"
+        class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden order-confirmation-backdrop p-4"
+        role="dialog" aria-modal="true" aria-labelledby="confirmation-title">
+        <div id="order-confirmation-content"
+            class="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 text-center transform scale-95 opacity-0 order-confirmation-content border border-gray-700">
+            <div
+                class="w-24 h-24 bg-emerald-500/10 border-2 border-emerald-500/30 rounded-full mx-auto flex items-center justify-center mb-6">
+                <svg class="w-16 h-16 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
             </div>
-            <h3 class="text-3xl font-heading font-bold text-white mb-4">¡Pedido Recibido!</h3>
-            <p class="text-gray-400 mb-8">Gracias por confiar en Dulce Antojo. Nos pondremos en contacto con tu negocio para coordinar la entrega y el pago.</p>
+            <h3 id="confirmation-title" class="text-3xl font-heading font-bold text-white mb-4">¡Pedido Recibido!</h3>
+            <p class="text-gray-400 mb-8">Gracias por confiar en Dulce Antojo. Nos pondremos en contacto con tu negocio
+                para coordinar la entrega y el pago.</p>
             <div class="bg-gray-800 rounded-lg p-4 mb-8 text-left">
                 <h4 class="font-semibold mb-3 text-white">Resumen del Pedido:</h4>
-                <div class="flex justify-between text-gray-300"><span class="text-gray-400">Total de Unidades:</span><span id="summary-total-items" class="font-bold"></span></div>
-                <div class="flex justify-between text-gray-300 mt-2"><span class="text-gray-400">Monto Total:</span><span id="summary-subtotal" class="font-bold text-emerald-400 text-lg"></span></div>
+                <div class="flex justify-between text-gray-300"><span class="text-gray-400">Total de
+                        Unidades:</span><span id="summary-total-items" class="font-bold"></span></div>
+                <div class="flex justify-between text-gray-300 mt-2"><span class="text-gray-400">Monto
+                        Total:</span><span id="summary-subtotal" class="font-bold text-emerald-400 text-lg"></span>
+                </div>
             </div>
-            <button id="close-confirmation-modal-button" class="w-full bg-emerald-500 text-white py-3 rounded-full font-bold text-lg hover:bg-emerald-600 transition duration-300 glowing-btn overflow-hidden relative">Entendido</button>
+            <button id="close-confirmation-modal-button"
+                class="w-full bg-emerald-500 text-white py-3 rounded-full font-bold text-lg hover:bg-emerald-600 transition duration-300 glowing-btn overflow-hidden relative">Entendido</button>
         </div>
     </div>
-    
-    <!-- Lightbox Modal -->
-    <div id="lightbox-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden p-4">
+
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden p-4"
+        role="dialog" aria-modal="true">
         <img id="lightbox-image" src="" class="max-w-full max-h-full rounded-lg shadow-2xl">
-        <button id="close-lightbox-button" class="absolute top-5 right-5 text-white text-5xl">&times;</button>
+        <button id="close-lightbox-button" class="absolute top-5 right-5 text-white text-5xl" aria-label="Cerrar imagen">&times;</button>
     </div>
-
-
-    <!-- Scroll to Top Button -->
-    <button id="scroll-to-top-btn" class="fixed bottom-5 right-5 bg-emerald-500/80 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 transform translate-y-5 hover:bg-emerald-600 transition z-30 backdrop-blur-sm">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+    
+    <button id="scroll-to-top-btn"
+        class="fixed bottom-5 right-5 bg-emerald-500/80 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 transform translate-y-5 hover:bg-emerald-600 transition z-30 backdrop-blur-sm"
+        aria-label="Volver arriba">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+        </svg>
     </button>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const products = [
-                 { id: 1, name: 'Granizado de Maracuyá', description: 'Refrescante y tropical, el equilibrio perfecto entre dulce y ácido. 100% natural.', price: 1700, priceFormatted: '$1,700', image: 'img/Granizado de maracuya.png' },
-                 { id: 2, name: 'Granizado de Oreo', description: 'Cremoso y delicioso, con trozos de galleta Oreo real. Un favorito instantáneo.', price: 1700, priceFormatted: '$1,700', image: 'img/Granizado de  oreo.png' },
-                 { id: 3, name: 'Granizado de Mora', description: 'Hecho con moras frescas de la región. Lleno de antioxidantes y un sabor inigualable.', price: 1700, priceFormatted: '$1,700', image: 'img/Granizado de  mora.png' },
-                 { id: 4, name: 'Granizado de Guanábana', description: 'Exótico y cremoso, el sabor auténtico de una de las frutas favoritas de Colombia.', price: 1700, priceFormatted: '$1,700', image: 'img/Granizado de guanabana.png' },
-                 { id: 5, name: 'Granizado de Milo', description: 'La energía y el sabor inconfundible de Milo en una versión helada y deliciosa.', price: 1700, priceFormatted: '$1,700', image: 'img/Granizados de milo.png' },
-                 { id: 6, name: 'Granizado de Café', description: 'El intenso y aromático sabor del café de nuestra tierra, perfecto para recargar energías.', price: 1700, priceFormatted: '$1,700', image: 'img/Granizados de cafe.png' },
-            ];
-
-            let cart = [];
-            let currentProductId = null; 
-            
-            // DOM Elements
-            const preloader = document.getElementById('preloader');
-            const productList = document.getElementById('product-list');
-            const cartButton = document.getElementById('cart-button');
-            const closeCartButton = document.getElementById('close-cart-button');
-            const cartModal = document.getElementById('cart-modal');
-            const cartContent = document.getElementById('cart-content');
-            const cartItemsContainer = document.getElementById('cart-items');
-            const cartCount = document.getElementById('cart-count');
-            const cartSubtotal = document.getElementById('cart-subtotal');
-            const emptyCartMessage = document.getElementById('empty-cart-message');
-            const checkoutButton = document.getElementById('checkout-button');
-            const toastMessage = document.getElementById('toast-message');
-            const contactForm = document.getElementById('contact-form');
-            const formErrorMessage = document.getElementById('form-error-message');
-            const submitButton = document.getElementById('submit-button');
-            const submitButtonText = document.getElementById('submit-button-text');
-            const minOrderMessage = document.getElementById('min-order-message');
-            const orderConfirmationModal = document.getElementById('order-confirmation-modal');
-            const orderConfirmationContent = document.getElementById('order-confirmation-content');
-            const closeConfirmationModalButton = document.getElementById('close-confirmation-modal-button');
-            const summaryTotalItems = document.getElementById('summary-total-items');
-            const summarySubtotal = document.getElementById('summary-subtotal');
-            const searchBar = document.getElementById('search-bar');
-            const noResultsMessage = document.getElementById('no-results-message');
-            const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
-            const mainNav = document.getElementById('main-nav');
-            const navLinks = mainNav.querySelectorAll('a');
-            
-            // Product Modal Elements
-            const productModal = document.getElementById('product-modal');
-            const productModalContent = document.getElementById('product-modal-content');
-            const closeProductModalButton = document.getElementById('close-product-modal-button');
-            const modalProductName = document.getElementById('modal-product-name');
-            const modalProductImage = document.getElementById('modal-product-image');
-            const modalProductDescription = document.getElementById('modal-product-description');
-            const modalProductPrice = document.getElementById('modal-product-price');
-            const modalProductQty = document.getElementById('modal-product-qty');
-            const modalAddToCartBtn = document.getElementById('modal-add-to-cart-btn');
-
-            // Lightbox Elements
-            const lightboxModal = document.getElementById('lightbox-modal');
-            const lightboxImage = document.getElementById('lightbox-image');
-            const closeLightboxButton = document.getElementById('close-lightbox-button');
-            const galleryItems = document.querySelectorAll('.gallery-item');
-
-            const MIN_ORDER_QUANTITY = 20;
-
-            const renderProducts = (productsToRender) => {
-                productList.innerHTML = '';
-                if (productsToRender.length === 0) {
-                    noResultsMessage.classList.remove('hidden');
-                } else {
-                    noResultsMessage.classList.add('hidden');
-                }
-                productsToRender.forEach(product => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card bg-gray-900/50 rounded-2xl overflow-hidden flex flex-col border border-gray-800 transition-all duration-300 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 transform hover:-translate-y-1 reveal-on-scroll cursor-pointer';
-                    card.dataset.productId = product.id;
-                    card.innerHTML = `
-                        <div class="relative">
-                            <img src="${product.image}" alt="${product.name}" class="w-full h-52 object-cover pointer-events-none">
-                            <div class="absolute top-0 right-0 bg-black/50 text-white text-lg font-bold p-2 px-4 m-3 rounded-full font-heading pointer-events-none">${product.priceFormatted}</div>
-                        </div>
-                        <div class="p-5 flex flex-col flex-grow pointer-events-none">
-                            <h4 class="text-xl font-bold text-white mb-2 font-heading">${product.name}</h4>
-                            <p class="text-gray-400 text-sm mb-4 flex-grow">${product.description}</p>
-                        </div>
-                        <div class="p-5 pt-0 mt-auto">
-                           <button class="view-product-btn w-full bg-gray-700/50 text-emerald-400 font-semibold py-3 px-4 rounded-full hover:bg-gray-700 transition duration-300">
-                                Ver Detalles
-                           </button>
-                        </div>`;
-                    productList.appendChild(card);
-                });
-            };
-            
-            const renderCart = () => {
-                cartItemsContainer.innerHTML = '';
-                if (cart.length === 0) {
-                    emptyCartMessage.classList.remove('hidden');
-                } else {
-                    emptyCartMessage.classList.add('hidden');
-                    cart.forEach(item => {
-                        const itemTotalPrice = (item.price * item.quantity).toLocaleString('es-CO');
-                        cartItemsContainer.innerHTML += `
-                            <div class="flex items-center justify-between py-4 border-b border-gray-800">
-                                <div class="flex items-center">
-                                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4" onerror="this.onerror=null;this.src='https://placehold.co/100x100/2d2d2d/9ca3af?text=Imagen';">
-                                    <div>
-                                        <p class="font-semibold text-white">${item.name}</p>
-                                        <p class="text-sm text-gray-400">${item.priceFormatted} c/u</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="flex items-center space-x-3 bg-gray-800 rounded-full p-1">
-                                        <button data-id="${item.id}" class="decrease-qty w-8 h-8 flex items-center justify-center bg-gray-700 rounded-full font-bold hover:bg-gray-600 transition-colors">-</button>
-                                        <span class="font-semibold w-8 text-center text-lg">${item.quantity}</span>
-                                        <button data-id="${item.id}" class="increase-qty w-8 h-8 flex items-center justify-center bg-gray-700 rounded-full font-bold hover:bg-gray-600 transition-colors">+</button>
-                                    </div>
-                                    <p class="text-lg font-bold text-emerald-400 ml-4 w-24 text-right">$${itemTotalPrice}</p>
-                                </div>
-                            </div>`;
-                    });
-                }
-                updateCartInfo();
-            };
-
-            const updateCartInfo = () => {
-                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                cartCount.textContent = totalItems;
-                cartSubtotal.textContent = `$${subtotal.toLocaleString('es-CO')}`;
-                if (totalItems > 0 && totalItems < MIN_ORDER_QUANTITY) {
-                    minOrderMessage.classList.remove('hidden');
-                    checkoutButton.disabled = true;
-                } else {
-                    minOrderMessage.classList.add('hidden');
-                    checkoutButton.disabled = cart.length === 0;
-                }
-            };
-            
-            const addToCart = (productId, quantity, button) => {
-                if (isNaN(quantity) || quantity <= 0) {
-                    showToastMessage('Por favor, ingresa una cantidad válida.', true);
-                    return;
-                }
-
-                const product = products.find(p => p.id === productId);
-                const existingItem = cart.find(item => item.id === productId);
-
-                if (existingItem) {
-                    existingItem.quantity += quantity;
-                } else {
-                    cart.push({ ...product, quantity: quantity });
-                }
-                
-                renderCart();
-                showToastMessage(`¡${quantity} x ${product.name} añadido(s)!`);
-                
-                if(button){
-                     // Fly-to-cart animation
-                    const rect = button.getBoundingClientRect();
-                    const flyingImage = document.createElement('img');
-                    flyingImage.src = product.image;
-                    flyingImage.className = 'flying-image';
-                    document.body.appendChild(flyingImage);
-
-                    flyingImage.style.left = `${rect.left + rect.width / 2}px`;
-                    flyingImage.style.top = `${rect.top + rect.height / 2}px`;
-                    flyingImage.style.width = `${rect.height}px`;
-                    flyingImage.style.height = `${rect.height}px`;
-
-                    const cartRect = cartButton.getBoundingClientRect();
-                    requestAnimationFrame(() => {
-                        flyingImage.style.left = `${cartRect.left + cartRect.width / 2}px`;
-                        flyingImage.style.top = `${cartRect.top + cartRect.height / 2}px`;
-                        flyingImage.style.width = '0px';
-                        flyingImage.style.height = '0px';
-                        flyingImage.style.opacity = '0';
-                    });
-
-                    setTimeout(() => {
-                        flyingImage.remove();
-                    }, 700);
-
-
-                    const btnText = button.querySelector('.btn-text');
-                    if (btnText) {
-                        btnText.textContent = '¡Añadido!';
-                        button.classList.add('bg-indigo-600');
-                        setTimeout(() => {
-                            btnText.textContent = 'Agregar al Pedido';
-                            button.classList.remove('bg-indigo-600');
-                        }, 1500);
-                    }
-                }
-            };
-            
-            const updateQuantity = (productId, change) => {
-                const itemInCart = cart.find(item => item.id === productId);
-                if (itemInCart) {
-                    itemInCart.quantity += change;
-                    if (itemInCart.quantity <= 0) {
-                        cart = cart.filter(item => item.id !== productId);
-                    }
-                }
-                renderCart();
-            };
-            
-            const showToastMessage = (message, isError = false) => {
-                toastMessage.innerHTML = `<p>${message}</p>`;
-                toastMessage.className = `fixed bottom-5 right-5 text-white py-3 px-6 rounded-full shadow-lg transform transition-all duration-500 z-50 ${isError ? 'bg-red-600' : 'bg-emerald-500'}`;
-                toastMessage.classList.remove('opacity-0', 'translate-y-10');
-                setTimeout(() => {
-                    toastMessage.classList.add('opacity-0', 'translate-y-10');
-                }, 3000);
-            };
-
-            const openCart = () => {
-                cartModal.classList.remove('hidden');
-                setTimeout(() => { cartContent.classList.remove('translate-x-full'); }, 10);
-            };
-
-            const closeCart = () => {
-                cartContent.classList.add('translate-x-full');
-                setTimeout(() => { cartModal.classList.add('hidden'); }, 300);
-            };
-
-            const showOrderConfirmationModal = () => {
-                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                summaryTotalItems.textContent = `${totalItems} unidades`;
-                summarySubtotal.textContent = `$${subtotal.toLocaleString('es-CO')}`;
-                orderConfirmationModal.classList.remove('hidden');
-                setTimeout(() => { orderConfirmationContent.classList.remove('opacity-0', 'scale-95'); }, 10);
-            };
-
-             const closeOrderConfirmationModal = () => {
-                orderConfirmationContent.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => { orderConfirmationModal.classList.add('hidden'); }, 300);
-            };
-
-            const openProductModal = (productId) => {
-                const product = products.find(p => p.id === productId);
-                if (!product) return;
-                
-                currentProductId = productId;
-                modalProductName.textContent = product.name;
-                modalProductImage.src = product.image;
-                modalProductDescription.textContent = product.description;
-                modalProductPrice.textContent = `${product.priceFormatted} / unidad`;
-                modalProductQty.value = 1;
-
-                productModal.classList.remove('hidden');
-                setTimeout(() => {
-                    productModalContent.classList.remove('opacity-0', 'scale-95');
-                }, 10);
-            };
-
-            const closeProductModal = () => {
-                productModalContent.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => {
-                    productModal.classList.add('hidden');
-                }, 300);
-            };
-
-            const openLightbox = (imgSrc) => {
-                lightboxImage.src = imgSrc;
-                lightboxModal.classList.remove('hidden');
-            };
-
-            const closeLightbox = () => {
-                lightboxModal.classList.add('hidden');
-            };
-
-            const handleSearch = () => {
-                const searchTerm = searchBar.value.toLowerCase().trim();
-                const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchTerm));
-                renderProducts(filteredProducts);
-                setupScrollAnimations();
-            };
-            
-            const setupScrollAnimations = () => {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.1 });
-                document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
-            };
-            
-            const handleScroll = () => {
-                if (window.scrollY > 300) {
-                    scrollToTopBtn.classList.remove('opacity-0', 'translate-y-5');
-                } else {
-                    scrollToTopBtn.classList.add('opacity-0', 'translate-y-5');
-                }
-            };
-
-            // Lógica para el cursor personalizado
-            const cursorDot = document.getElementById('cursor-dot');
-            const cursorOutline = document.getElementById('cursor-outline');
-            
-            window.addEventListener('mousemove', (e) => {
-                const posX = e.clientX;
-                const posY = e.clientY;
-
-                cursorDot.style.left = `${posX}px`;
-                cursorDot.style.top = `${posY}px`;
-
-                cursorOutline.animate({
-                    left: `${posX}px`,
-                    top: `${posY}px`
-                }, { duration: 100, fill: 'forwards' }); // Duración reducida para respuesta más rápida
-            });
-
-            document.querySelectorAll('a, button, details, input, textarea, .product-card, .gallery-item').forEach((el) => {
-                el.addEventListener('mouseenter', () => {
-                    cursorOutline.style.transform = 'translate(-50%, -50%) scale(1.5)';
-                    cursorOutline.style.borderColor = '#ffffff';
-                });
-                el.addEventListener('mouseleave', () => {
-                    cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
-                    cursorOutline.style.borderColor = '#6EE7B7';
-                });
-            });
-
-            // Validación de Formulario
-            const validateForm = () => {
-                const name = document.getElementById('name').value.trim();
-                const business = document.getElementById('business').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-                let isValid = true;
-                formErrorMessage.textContent = '';
-
-                if (name === '' || business === '' || email === '') {
-                    formErrorMessage.textContent = 'Por favor, completa todos los campos requeridos.';
-                    isValid = false;
-                } else if (!emailRegex.test(email)) {
-                    formErrorMessage.textContent = 'Por favor, ingresa un correo electrónico válido.';
-                    isValid = false;
-                }
-                
-                return isValid;
-            };
-
-            // Lógica para Navegación Activa
-            const setupNavObserver = () => {
-                const options = {
-                    rootMargin: '-50% 0px -50% 0px',
-                    threshold: 0
-                };
-
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        const id = entry.target.getAttribute('id');
-                        const navLink = mainNav.querySelector(`a[href="#${id}"]`);
-
-                        if (entry.isIntersecting) {
-                            navLinks.forEach(link => link.classList.remove('active-nav-link'));
-                            if(navLink) navLink.classList.add('active-nav-link');
-                        }
-                    });
-                }, options);
-
-                document.querySelectorAll('main section').forEach(section => {
-                    observer.observe(section);
-                });
-            };
-
-
-            // Event Listeners
-            productList.addEventListener('click', e => {
-                const card = e.target.closest('.product-card');
-                if (card) {
-                    openProductModal(parseInt(card.dataset.productId));
-                }
-            });
-
-            galleryItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    openLightbox(item.querySelector('img').src);
-                });
-            });
-
-            modalAddToCartBtn.addEventListener('click', () => {
-                if (currentProductId) {
-                    addToCart(currentProductId, parseInt(modalProductQty.value), modalAddToCartBtn);
-                }
-            });
-
-            cartButton.addEventListener('click', openCart);
-            closeCartButton.addEventListener('click', closeCart);
-            cartModal.addEventListener('click', e => e.target === cartModal && closeCart());
-            
-            cartItemsContainer.addEventListener('click', e => {
-                const id = parseInt(e.target.closest('button')?.dataset.id);
-                if (!id) return;
-                if (e.target.closest('.increase-qty')) updateQuantity(id, 1);
-                if (e.target.closest('.decrease-qty')) updateQuantity(id, -1);
-            });
-            
-            checkoutButton.addEventListener('click', () => {
-                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                if (cart.length > 0 && totalItems >= MIN_ORDER_QUANTITY) {
-                    showOrderConfirmationModal();
-                    closeCart();
-                    cart = [];
-                    renderCart();
-                } else {
-                    showToastMessage(`Debes pedir al menos ${MIN_ORDER_QUANTITY} unidades.`, true);
-                }
-            });
-            contactForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                if (validateForm()) {
-                    submitButtonText.textContent = 'Enviando...';
-                    submitButton.disabled = true;
-
-                    setTimeout(() => { // Simula el envío
-                        showToastMessage('¡Gracias! Tu mensaje ha sido enviado.');
-                        contactForm.reset();
-                        submitButtonText.textContent = 'Enviar Mensaje';
-                        submitButton.disabled = false;
-                    }, 1500);
-                }
-            });
-            closeConfirmationModalButton.addEventListener('click', closeOrderConfirmationModal);
-            orderConfirmationModal.addEventListener('click', e => e.target === orderConfirmationModal && closeOrderConfirmationModal());
-            closeProductModalButton.addEventListener('click', closeProductModal);
-            productModal.addEventListener('click', e => e.target === productModal && closeProductModal());
-            closeLightboxButton.addEventListener('click', closeLightbox);
-            lightboxModal.addEventListener('click', e => e.target === lightboxModal && closeLightbox());
-
-            searchBar.addEventListener('input', handleSearch);
-            window.addEventListener('scroll', handleScroll);
-            scrollToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-            // Initial Render
-            window.onload = () => {
-                preloader.style.opacity = '0';
-                setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 500);
-
-                renderProducts(products);
-                setupScrollAnimations();
-                setupNavObserver();
-                renderCart();
-            };
-        });
-    </script>
+    <script src="script.js" defer></script>
 </body>
-</html>
 
+</html>
