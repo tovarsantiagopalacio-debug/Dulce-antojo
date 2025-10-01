@@ -85,18 +85,43 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const renderCart = () => {
         const cartItemsContainer = getElement('cart-items');
-        const emptyCartMessage = getElement('empty-cart-message');
-        if (!cartItemsContainer || !emptyCartMessage) return;
-        cartItemsContainer.innerHTML = '';
-        emptyCartMessage.classList.toggle('hidden', cart.length > 0);
-        cart.forEach(item => {
-            const itemTotalPrice = (item.price * item.quantity).toLocaleString('es-CO');
-            cartItemsContainer.innerHTML += `
-                <div class="flex items-center justify-between py-4 border-b border-gray-800">
-                    <div class="flex items-center"><img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4"><div><p class="font-semibold text-white">${item.name}</p><p class="text-sm text-gray-400">${item.priceFormatted} c/u</p></div></div>
-                    <div class="flex items-center"><div class="flex items-center space-x-3 bg-gray-800 rounded-full p-1"><button data-id="${item.id}" class="decrease-qty w-8 h-8 flex items-center justify-center bg-gray-700 rounded-full font-bold hover:bg-gray-600">-</button><span class="font-semibold w-8 text-center text-lg">${item.quantity}</span><button data-id="${item.id}" class="increase-qty w-8 h-8 flex items-center justify-center bg-gray-700 rounded-full font-bold hover:bg-gray-600">+</button></div><p class="text-lg font-bold text-emerald-400 ml-4 w-24 text-right">$${itemTotalPrice}</p></div>
+        if (!cartItemsContainer) return;
+
+        if (cart.length === 0) {
+            // Si el carrito está vacío, muestra el mensaje.
+            cartItemsContainer.innerHTML = `
+                <div id="empty-cart-message" class="text-center text-gray-500 mt-10 flex flex-col items-center h-full justify-center">
+                    <svg class="w-20 h-20 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <p class="mt-4 text-lg">Tu carrito está vacío.</p>
+                    <p class="text-sm">Agrega productos para empezar.</p>
                 </div>`;
-        });
+        } else {
+            // Si el carrito tiene productos, los construye y los muestra.
+            cartItemsContainer.innerHTML = cart.map(item => {
+                const itemTotalPrice = (item.price * item.quantity).toLocaleString('es-CO');
+                return `
+                    <div class="flex items-center justify-between py-4 border-b border-gray-800">
+                        <div class="flex items-center">
+                            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4">
+                            <div>
+                                <p class="font-semibold text-white">${item.name}</p>
+                                <p class="text-sm text-gray-400">${item.priceFormatted} c/u</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="flex items-center space-x-3 bg-gray-800 rounded-full p-1">
+                                <button data-id="${item.id}" class="decrease-qty w-8 h-8 flex items-center justify-center bg-gray-700 rounded-full font-bold hover:bg-gray-600">-</button>
+                                <span class="font-semibold w-8 text-center text-lg">${item.quantity}</span>
+                                <button data-id="${item.id}" class="increase-qty w-8 h-8 flex items-center justify-center bg-gray-700 rounded-full font-bold hover:bg-gray-600">+</button>
+                            </div>
+                            <p class="text-lg font-bold text-emerald-400 ml-4 w-24 text-right">$${itemTotalPrice}</p>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+        
         updateCartInfo();
     };
 
@@ -328,9 +353,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         getElement('close-product-modal-button')?.addEventListener('click', closeProductModal);
         getElement('product-modal')?.addEventListener('click', (e) => e.target === getElement('product-modal') && closeProductModal());
-        getElement('cart-button')?.addEventListener('click', () => getElement('cart-modal').classList.remove('hidden'));
-        getElement('close-cart-button')?.addEventListener('click', () => getElement('cart-modal').classList.add('hidden'));
-        getElement('cart-modal')?.addEventListener('click', e => e.target === getElement('cart-modal') && getElement('cart-modal').classList.add('hidden'));
+        
+        const cartModal = getElement('cart-modal');
+        const cartContent = getElement('cart-content');
+        const openCart = () => {
+            if (cartModal) cartModal.classList.remove('hidden');
+            if (cartContent) setTimeout(() => cartContent.classList.remove('translate-x-full'), 10); // Desliza hacia adentro
+        };
+        const closeCart = () => {
+            if (cartContent) cartContent.classList.add('translate-x-full'); // Desliza hacia afuera
+            if (cartModal) setTimeout(() => cartModal.classList.add('hidden'), 300); // Oculta después de la animación
+        };
+
+        getElement('cart-button')?.addEventListener('click', openCart);
+        getElement('close-cart-button')?.addEventListener('click', closeCart);
+        cartModal?.addEventListener('click', e => e.target === cartModal && closeCart());
+
         getElement('cart-items')?.addEventListener('click', e => {
             const button = e.target.closest('button');
             if (!button) return;
@@ -339,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (button.classList.contains('decrease-qty')) updateQuantity(id, -1);
         });
         getElement('checkout-button')?.addEventListener('click', () => {
-            getElement('cart-modal').classList.add('hidden');
+            closeCart();
             showOrderConfirmation();
         });
         getElement('close-confirmation-modal-button')?.addEventListener('click', () => {
