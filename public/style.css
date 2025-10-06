@@ -1,0 +1,145 @@
+:root {
+    --color-primario: #34D399;
+    --color-primario-brillante: #6EE7B7;
+    --color-fondo: #0A0A0A;
+    --color-gris-oscuro: #1F2937;
+    --color-texto: #E5E7EB;
+    --color-borde: #4B5563;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    scroll-behavior: smooth;
+    cursor: none;
+    overflow-x: hidden;
+}
+
+.font-heading {
+    font-family: 'Poppins', sans-serif;
+}
+
+.hero-bg {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('img/portada.webp');
+    background-size: cover;
+    background-position: center;
+}
+
+#cursor-dot,
+#cursor-outline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    transition: transform 0.1s ease-out;
+}
+
+#cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-primario-brillante);
+}
+
+#cursor-outline {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--color-primario-brillante);
+    transition: transform 0.1s ease-out, width 0.2s, height 0.2s;
+}
+
+.animated-gradient-text {
+    background: linear-gradient(90deg, #ffffff, var(--color-primario-brillante), #ffffff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-flow 5s linear infinite;
+}
+
+@keyframes gradient-flow {
+    0% {
+        background-position: 200% center;
+    }
+    100% {
+        background-position: 0% center;
+    }
+}
+
+#preloader {
+    transition: opacity 0.5s ease-out;
+}
+
+.loader-icon {
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+}
+
+.aurora-background {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+}
+.aurora-background::before, .aurora-background::after {
+    content: ''; position: absolute; width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(110, 231, 183, 0.1) 0%, rgba(110, 231, 183, 0) 60%);
+    border-radius: 50%; filter: blur(100px); will-change: transform;
+}
+.aurora-background::before { top: -20%; left: -20%; animation: move-aurora1 20s infinite linear alternate; }
+.aurora-background::after { bottom: -20%; right: -20%; animation: move-aurora2 25s infinite linear alternate; }
+@keyframes move-aurora1 { from { transform: translate(-20%, -20%) rotate(0deg); } to { transform: translate(20%, 20%) rotate(180deg); } }
+@keyframes move-aurora2 { from { transform: translate(20%, 20%) rotate(0deg); } to { transform: translate(-20%, -20%) rotate(-180deg); } }
+
+
+.category-btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: var(--color-texto);
+    background-color: transparent;
+    border: 2px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+.category-btn:hover {
+    background-color: rgba(110, 231, 183, 0.1);
+    color: var(--color-primario-brillante);
+}
+.category-btn.active-category {
+    background-color: var(--color-primario);
+    color: var(--color-fondo);
+}
+
+.skeleton-card {
+    background-color: var(--color-gris-oscuro);
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--color-borde);
+}
+.skeleton-card .skeleton-img, .skeleton-card .skeleton-title, .skeleton-card .skeleton-text {
+    background: linear-gradient(90deg, #2d3748 25%, #4a5568 50%, #2d3748 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 0.5rem;
+}
+.skeleton-card .skeleton-img { width: 100%; height: 13rem; border-radius: 0; }
+.skeleton-card .skeleton-content { padding: 1.25rem; }
+.skeleton-card .skeleton-title { width: 75%; height: 1.25rem; margin-bottom: 0.75rem; }
+.skeleton-card .skeleton-text { width: 100%; height: 0.75rem; }
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
