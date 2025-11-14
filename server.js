@@ -30,7 +30,19 @@ mongoose.connect(process.env.MONGO_URI)
 app.get('/api/products', async (req, res) => {
     try {
         const products = await Product.find({});
-        res.json(products);
+        // Mapear y añadir el campo de precio formateado
+        const formattedProducts = products.map(p => {
+            const productObject = p.toObject ? p.toObject() : p;
+            return {
+                ...productObject,
+                priceFormatted: new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                }).format(productObject.price)
+            };
+        });
+        res.json(formattedProducts);
     } catch (error) {
         res.status(500).json({ message: 'Error en el servidor' });
     }
@@ -121,7 +133,5 @@ app.get('/admin', (req, res) => {
 });
 
 
-// Iniciar el servidor
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
+// Exportar la app para Vercel
+module.exports = app;
