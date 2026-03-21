@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Dulce Antojo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="text-gray-200 min-h-screen" style="background-color: #0A0A0A;">
+    <div class="aurora-background"></div>
+
+    <!-- HEADER -->
+    <header class="bg-black/70 backdrop-blur-lg border-b border-gray-800 sticky top-0 z-40">
+      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <a href="/" class="flex items-center space-x-3">
+          <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0c-.454-.303-.977-.454-1.5-.454V5.546c.523 0 1.046-.151 1.5-.454a2.704 2.704 0 013 0 2.704 2.704 0 003 0 2.704 2.704 0 013 0 2.704 2.704 0 003 0c.454.303.977.454 1.5.454v10z"></path>
+          </svg>
+          <h1 class="text-2xl font-bold text-white tracking-wide font-heading">
+            Dulce Antojo <span class="text-emerald-400 text-lg">Admin</span>
+          </h1>
+        </a>
+        <div class="flex items-center space-x-4">
+          <a href="/" class="text-gray-300 hover:text-emerald-400 transition font-medium text-sm">← Sitio público</a>
+          <button id="logout-btn" class="text-gray-300 hover:text-red-400 transition" title="Cerrar Sesión">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-10 max-w-6xl">
+
+      <!-- TABS -->
+      <div role="tablist" class="flex space-x-1 mb-8 border-b border-gray-800">
+        <button id="tab-pedidos" role="tab" aria-selected="true" aria-controls="panel-pedidos"
+          class="admin-tab admin-tab-active px-6 py-3 font-semibold rounded-t-lg transition-colors">
+          Pedidos
+        </button>
+        <button id="tab-productos" role="tab" aria-selected="false" aria-controls="panel-productos"
+          class="admin-tab px-6 py-3 font-semibold rounded-t-lg transition-colors">
+          Productos
+        </button>
+      </div>
+
+      <!-- PANEL PEDIDOS -->
+      <div id="panel-pedidos" role="tabpanel" aria-labelledby="tab-pedidos">
+        <div id="loading-message" class="text-center text-gray-400 py-10">Cargando pedidos...</div>
+        <div id="orders-container" class="space-y-4"></div>
+      </div>
+
+      <!-- PANEL PRODUCTOS -->
+      <div id="panel-productos" role="tabpanel" aria-labelledby="tab-productos" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold font-heading text-white">Gestión de Productos</h2>
+          <button id="btn-nuevo-producto"
+            class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2 rounded-full transition">
+            + Nuevo Producto
+          </button>
+        </div>
+        <div id="products-loading" class="text-center text-gray-400 py-10">Cargando productos...</div>
+        <div id="products-table-container" class="hidden overflow-x-auto rounded-xl border border-gray-800">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-900 text-gray-400 uppercase text-xs">
+              <tr>
+                <th class="px-4 py-3 text-left">Producto</th>
+                <th class="px-4 py-3 text-left">Categoría</th>
+                <th class="px-4 py-3 text-left">Precio</th>
+                <th class="px-4 py-3 text-left">Estado</th>
+                <th class="px-4 py-3 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="products-tbody" class="divide-y divide-gray-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL PRODUCTO (overlay + modal, mismo para crear y editar) -->
+    <div id="modal-overlay-producto"
+      class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center p-4">
+      <div id="modal-producto" class="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl">
+        <div class="flex justify-between items-center px-6 pt-6 pb-4 border-b border-gray-800">
+          <h2 id="modal-titulo" class="text-xl font-bold font-heading text-white">Nuevo Producto</h2>
+          <button id="btn-cerrar-modal" class="text-gray-400 hover:text-white transition text-3xl leading-none">&times;</button>
+        </div>
+        <form id="form-producto" class="px-6 py-5 space-y-4">
+          <input type="hidden" id="input-id" />
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Nombre</label>
+            <input id="input-nombre" type="text" required
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Categoría</label>
+            <select id="input-categoria" required
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500">
+              <option value="Frutal">Frutal</option>
+              <option value="Cremoso">Cremoso</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Descripción</label>
+            <textarea id="input-descripcion" required rows="2"
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Precio (COP)</label>
+            <input id="input-precio" type="number" min="0" required
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Imagen (https://... o /img/nombre.webp)</label>
+            <input id="input-imagen" type="text" required placeholder="https://..."
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div id="form-error" class="hidden text-red-400 text-sm pt-1"></div>
+          <div class="flex gap-3 pt-2">
+            <button type="button" id="btn-cancelar-modal"
+              class="flex-1 border border-gray-700 text-gray-300 hover:text-white rounded-full py-2 transition">
+              Cancelar
+            </button>
+            <button type="submit"
+              class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-full py-2 transition">
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

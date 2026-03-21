@@ -1,0 +1,8 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm --prefix Dulce-antojo-main start"
+healthcheckPath = "/api/products"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
