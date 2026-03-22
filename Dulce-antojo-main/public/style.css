@@ -144,6 +144,24 @@ body {
     100% { background-position: -200% 0; }
 }
 
+/* ── Quantity input: ocultar flechas nativas del browser ─────────────────── */
+input[type=number].quantity-input::-webkit-inner-spin-button,
+input[type=number].quantity-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number].quantity-input { -moz-appearance: textfield; }
+
+/* ── Admin date filter buttons ───────────────────────────────────────────── */
+.date-filter-btn {
+    color: #9CA3AF;
+    background-color: transparent;
+    border: 1px solid #374151;
+}
+.date-filter-btn:hover { color: #E5E7EB; border-color: #6B7280; }
+.date-filter-active {
+    color: #0A0A0A;
+    background-color: #34D399;
+    border-color: #34D399;
+}
+
 /* ── Admin tabs ─────────────────────────────────────────────────────────── */
 .admin-tab {
     color: #9CA3AF;

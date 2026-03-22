@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const XLSX = require("xlsx");
 require("dotenv").config();
 
 const Product = require("./models/product.model");
@@ -144,7 +145,14 @@ app.get("/api/orders/my", authMiddleware, async (req, res) => {
 
 app.get("/api/admin/orders", authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const orders = await Order.find({})
+    const { date } = req.query;
+    const query = {};
+    if (date) {
+      const start = new Date(date + "T00:00:00.000Z");
+      const end   = new Date(date + "T23:59:59.999Z");
+      query.orderDate = { $gte: start, $lte: end };
+    }
+    const orders = await Order.find(query)
       .sort({ orderDate: -1 })
       .populate("user", "businessName email")
       .populate({ path: "products.product", model: "Product", select: "name" });
@@ -152,6 +160,71 @@ app.get("/api/admin/orders", authMiddleware, adminMiddleware, async (req, res) =
   } catch (error) {
     console.error("Error al obtener las órdenes:", error);
     res.status(500).json({ message: "Error en el servidor al obtener las órdenes." });
+  }
+});
+
+// Exportar pedidos del día en Excel
+app.get("/api/admin/orders/export", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { date } = req.query;
+    const targetDate = date ? new Date(date + "T12:00:00.000Z") : new Date();
+    const start = new Date(date ? date + "T00:00:00.000Z" : new Date().toISOString().split("T")[0] + "T00:00:00.000Z");
+    const end   = new Date(date ? date + "T23:59:59.999Z" : new Date().toISOString().split("T")[0] + "T23:59:59.999Z");
+
+    const orders = await Order.find({ orderDate: { $gte: start, $lte: end } })
+      .sort({ orderDate: 1 })
+      .populate("user", "businessName")
+      .populate({ path: "products.product", model: "Product", select: "name price" });
+
+    // Resumen: total por sabor (para empaque)
+    const totals = {};
+    orders.forEach((order) => {
+      order.products.forEach((item) => {
+        const name = item.product ? item.product.name : "Producto eliminado";
+        totals[name] = (totals[name] || 0) + item.quantity;
+      });
+    });
+
+    const dateLabel = targetDate.toLocaleDateString("es-CO", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+
+    const resumenData = [
+      [`RESUMEN DE EMPAQUE — ${dateLabel.toUpperCase()}`],
+      [],
+      ["SABOR", "CANTIDAD TOTAL"],
+      ...Object.entries(totals).sort((a, b) => b[1] - a[1]).map(([name, qty]) => [name, qty]),
+      [],
+      ["TOTAL PEDIDOS", orders.length],
+    ];
+
+    const detalleData = [
+      ["HORA", "CLIENTE", "PRODUCTO", "CANTIDAD", "ESTADO"],
+      ...orders.flatMap((order) =>
+        order.products.map((item) => [
+          new Date(order.orderDate).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }),
+          order.user ? order.user.businessName : "Desconocido",
+          item.product ? item.product.name : "Eliminado",
+          item.quantity,
+          order.status,
+        ])
+      ),
+    ];
+
+    const wb = XLSX.utils.book_new();
+    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
+    wsResumen["!cols"] = [{ wch: 35 }, { wch: 18 }];
+    XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen Empaque");
+    const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData);
+    wsDetalle["!cols"] = [{ wch: 10 }, { wch: 28 }, { wch: 28 }, { wch: 12 }, { wch: 14 }];
+    XLSX.utils.book_append_sheet(wb, wsDetalle, "Detalle Pedidos");
+
+    const fileDateLabel = targetDate.toISOString().split("T")[0];
+    const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+    res.setHeader("Content-Disposition", `attachment; filename="pedidos-${fileDateLabel}.xlsx"`);
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.send(buffer);
+  } catch (error) {
+    console.error("Error exportando Excel:", error);
+    res.status(500).json({ message: "Error al exportar." });
   }
 });
 

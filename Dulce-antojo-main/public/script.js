@@ -168,9 +168,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     <div class="mt-auto flex items-center gap-2">
                         <div class="flex items-center border-2 border-gray-700 rounded-full">
-                            <button class="quantity-btn p-2 text-lg" data-action="decrease" data-product-id="${productId}">-</button>
-                            <input type="text" value="1" readonly class="quantity-input w-10 bg-transparent text-center font-bold" data-product-id="${productId}">
-                            <button class="quantity-btn p-2 text-lg" data-action="increase" data-product-id="${productId}">+</button>
+                            <button class="quantity-btn p-2 text-lg leading-none" data-action="decrease" data-product-id="${productId}">−</button>
+                            <input type="number" value="1" min="1" max="999"
+                                class="quantity-input w-14 bg-transparent text-center font-bold text-white focus:outline-none"
+                                data-product-id="${productId}">
+                            <button class="quantity-btn p-2 text-lg leading-none" data-action="increase" data-product-id="${productId}">+</button>
                         </div>
                         <button class="add-to-cart-btn flex-grow bg-emerald-500 text-white font-semibold py-3 px-4 rounded-full hover:bg-emerald-600 transition" data-product-id="${productId}">
                             Agregar
@@ -208,10 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const input = productList.querySelector(`.quantity-input[data-product-id="${productId}"]`);
 
             if (input) {
-                const quantity = parseInt(input.value, 10);
+                const quantity = Math.max(1, parseInt(input.value, 10) || 1);
                 addToCart(productId, quantity);
-                
-                // Opcional: Resetear la cantidad a 1 después de agregar
                 input.value = 1;
             }
         }

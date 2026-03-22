@@ -60,10 +60,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── PEDIDOS ─────────────────────────────────────────────────────────────
     const loadingMessage   = document.getElementById('loading-message');
     const ordersContainer  = document.getElementById('orders-container');
+    const dateLabel        = document.getElementById('date-label');
+    const btnHoy           = document.getElementById('btn-hoy');
+    const btnAyer          = document.getElementById('btn-ayer');
+    const datePicker       = document.getElementById('date-picker');
+    const btnExportar      = document.getElementById('btn-exportar-excel');
+
+    // Fecha seleccionada actualmente (YYYY-MM-DD)
+    const toLocalDateStr = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    };
+
+    let selectedDate = toLocalDateStr(new Date()); // hoy por defecto
+
+    const setDateFilter = (dateStr, activeBtn) => {
+        selectedDate = dateStr;
+        datePicker.value = dateStr;
+        [btnHoy, btnAyer].forEach(b => b?.classList.remove('date-filter-active'));
+        activeBtn?.classList.add('date-filter-active');
+        fetchOrders();
+    };
+
+    btnHoy?.addEventListener('click', () => setDateFilter(toLocalDateStr(new Date()), btnHoy));
+    btnAyer?.addEventListener('click', () => {
+        const ayer = new Date();
+        ayer.setDate(ayer.getDate() - 1);
+        setDateFilter(toLocalDateStr(ayer), btnAyer);
+    });
+    datePicker?.addEventListener('change', (e) => {
+        [btnHoy, btnAyer].forEach(b => b?.classList.remove('date-filter-active'));
+        setDateFilter(e.target.value, null);
+    });
+
+    btnExportar?.addEventListener('click', () => {
+        if (!selectedDate) return;
+        const url = `/api/admin/orders/export?date=${selectedDate}`;
+        const a = document.createElement('a');
+        a.href = url;
+        a.setAttribute('download', `pedidos-${selectedDate}.xlsx`);
+        // añadir el token en la URL no es posible directamente; usamos fetch con blob
+        fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.blob())
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                a.href = blobUrl;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => { URL.revokeObjectURL(blobUrl); a.remove(); }, 1000);
+            })
+            .catch(() => alert('Error al exportar el Excel.'));
+    });
 
     const fetchOrders = async () => {
+        loadingMessage.style.display = 'block';
+        ordersContainer.innerHTML = '';
         try {
-            const response = await fetch('/api/admin/orders', { headers: authHeaders() });
+            const url = selectedDate ? `/api/admin/orders?date=${selectedDate}` : '/api/admin/orders';
+            const response = await fetch(url, { headers: authHeaders() });
             if (response.status === 403) {
                 loadingMessage.textContent = 'Acceso denegado. Solo administradores.';
                 loadingMessage.style.color = '#F87171';
@@ -79,8 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const orders = await response.json();
             loadingMessage.style.display = 'none';
 
+            // Label de fecha
+            if (dateLabel && selectedDate) {
+                const d = new Date(selectedDate + 'T12:00:00');
+                dateLabel.textContent = `${orders.length} pedido(s) — ${d.toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+            }
+
             if (orders.length === 0) {
-                ordersContainer.innerHTML = '<p class="text-center text-gray-500 py-10">Aún no se han realizado pedidos.</p>';
+                ordersContainer.innerHTML = '<p class="text-center text-gray-500 py-10">No hay pedidos para este día.</p>';
                 return;
             }
 
@@ -156,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    datePicker.value = selectedDate;
     fetchOrders();
 
     // ── PRODUCTOS ────────────────────────────────────────────────────────────
