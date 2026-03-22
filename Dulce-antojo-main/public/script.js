@@ -537,34 +537,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const setupCursor = () => {
-        const cursorDot = document.getElementById('cursor-dot');
-        const cursorOutline = document.getElementById('cursor-outline');
-        if (!cursorDot || !cursorOutline) return;
-        // Ocultar cursor personalizado en dispositivos táctiles
-        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-            cursorDot.style.display = 'none';
-            cursorOutline.style.display = 'none';
-            document.body.style.cursor = 'auto';
-            return;
-        }
-        window.addEventListener('mousemove', e => {
-            cursorDot.style.left = `${e.clientX}px`;
-            cursorDot.style.top = `${e.clientY}px`;
-            cursorOutline.style.left = `${e.clientX}px`;
-            cursorOutline.style.top = `${e.clientY}px`;
-        });
-        document.querySelectorAll('a, button, input, details, select').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursorOutline.style.transform = 'translate(-50%, -50%) scale(1.5)';
-                cursorOutline.style.borderColor = '#6EE7B7';
-            });
-            el.addEventListener('mouseleave', () => {
-                cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
-                cursorOutline.style.borderColor = '';
-            });
-        });
-    };
 
     // --- REVEAL ON SCROLL ---
     const setupRevealOnScroll = () => {
@@ -600,7 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const main = async () => {
         cart = loadCartFromLocalStorage();
         updateAuthState();
-        setupCursor();
         setupEventListeners();
         setupRevealOnScroll();
         setupDynamicYear();
@@ -610,7 +581,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/products');
             if (!response.ok) throw new Error('Error al cargar productos');
             allProducts = await response.json();
-            renderProducts(allProducts);
+            if (allProducts.length === 0 && productList) {
+                productList.innerHTML = `<p class="col-span-full text-center text-gray-500 py-16">Por ahora no hay productos disponibles.<br>¡Vuelve pronto!</p>`;
+            } else {
+                renderProducts(allProducts);
+            }
         } catch (error) {
             console.error("Error en fetch de productos:", error);
             if (productList) productList.innerHTML = `<p class="col-span-full text-center text-gray-500">Error al cargar el catálogo.</p>`;

@@ -37,6 +37,22 @@
 
     <main class="container mx-auto px-4 py-10 max-w-6xl">
 
+      <!-- RESUMEN DEL DÍA -->
+      <div id="stats-bar" class="grid grid-cols-3 gap-4 mb-8">
+        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 text-center">
+          <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Pedidos hoy</p>
+          <p id="stat-pedidos" class="text-4xl font-bold font-heading text-white">—</p>
+        </div>
+        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 text-center">
+          <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Ventas hoy</p>
+          <p id="stat-ventas" class="text-4xl font-bold font-heading text-emerald-400">—</p>
+        </div>
+        <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 text-center">
+          <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Pendientes</p>
+          <p id="stat-pendientes" class="text-4xl font-bold font-heading text-yellow-400">—</p>
+        </div>
+      </div>
+
       <!-- TABS -->
       <div role="tablist" class="flex space-x-1 mb-8 border-b border-gray-800">
         <button id="tab-pedidos" role="tab" aria-selected="true" aria-controls="panel-pedidos"

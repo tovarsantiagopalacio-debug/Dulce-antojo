@@ -141,6 +141,24 @@ app.get("/api/orders/my", authMiddleware, async (req, res) => {
   }
 });
 
+// ─── ADMIN — STATS ────────────────────────────────────────────────────────────
+
+app.get("/api/admin/stats", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { date } = req.query;
+    const dateStr = date || new Date().toISOString().split("T")[0];
+    const start = new Date(dateStr + "T00:00:00.000Z");
+    const end   = new Date(dateStr + "T23:59:59.999Z");
+    const orders = await Order.find({ orderDate: { $gte: start, $lte: end } });
+    const totalPedidos = orders.length;
+    const totalVentas  = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    const pedidosPendientes = orders.filter(o => o.status === "pendiente").length;
+    res.json({ totalPedidos, totalVentas, pedidosPendientes });
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener estadísticas." });
+  }
+});
+
 // ─── ADMIN — PEDIDOS ──────────────────────────────────────────────────────────
 
 app.get("/api/admin/orders", authMiddleware, adminMiddleware, async (req, res) => {
@@ -289,6 +307,12 @@ app.get("/admin", (req, res) => {
 
 app.get("/mis-pedidos", (req, res) => {
   res.sendFile(__dirname + "/public/my-orders.html");
+});
+
+// ─── 404 ──────────────────────────────────────────────────────────────────────
+
+app.use((req, res) => {
+  res.status(404).sendFile(__dirname + "/public/404.html");
 });
 
 // ─── ERROR HANDLER CENTRALIZADO ───────────────────────────────────────────────

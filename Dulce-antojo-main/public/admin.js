@@ -76,12 +76,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedDate = toLocalDateStr(new Date()); // hoy por defecto
 
+    const fetchStats = async () => {
+        try {
+            const res = await fetch(`/api/admin/stats?date=${selectedDate}`, { headers: authHeaders() });
+            if (!res.ok) return;
+            const { totalPedidos, totalVentas, pedidosPendientes } = await res.json();
+            document.getElementById('stat-pedidos').textContent    = totalPedidos;
+            document.getElementById('stat-ventas').textContent     = formatCurrency(totalVentas);
+            document.getElementById('stat-pendientes').textContent = pedidosPendientes;
+        } catch { /* silencioso */ }
+    };
+
     const setDateFilter = (dateStr, activeBtn) => {
         selectedDate = dateStr;
         datePicker.value = dateStr;
         [btnHoy, btnAyer].forEach(b => b?.classList.remove('date-filter-active'));
         activeBtn?.classList.add('date-filter-active');
         fetchOrders();
+        fetchStats();
     };
 
     btnHoy?.addEventListener('click', () => setDateFilter(toLocalDateStr(new Date()), btnHoy));
@@ -220,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     datePicker.value = selectedDate;
     fetchOrders();
+    fetchStats();
 
     // ── PRODUCTOS ────────────────────────────────────────────────────────────
     let productosLoaded = false;
