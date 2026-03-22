@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const XLSX = require("xlsx");
+const ExcelJS = require("exceljs");
 require("dotenv").config();
 
 const Product = require("./models/product.model");
@@ -13,6 +13,9 @@ const User = require("./models/user.model");
 const Order = require("./models/order.model");
 const authMiddleware = require("./middleware/auth.middleware");
 const adminMiddleware = require("./middleware/admin.middleware");
+const upload = require("./services/cloudinary.service");
+const { sendResetEmail, sendWelcomeEmail } = require("./services/email.service");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -72,6 +75,7 @@ app.post("/api/auth/register", authLimiter, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new User({ businessName, email, password: hashedPassword });
     await newUser.save();
+    sendWelcomeEmail(email, businessName).catch(err => console.error("Error enviando email de bienvenida:", err));
     res.status(201).json({ message: "Usuario registrado con éxito." });
   } catch (error) {
     res.status(500).json({ message: "Error en el servidor al registrar." });
@@ -101,6 +105,53 @@ app.post("/api/auth/login", authLimiter, async (req, res) => {
   }
 });
 
+// ─── RECUPERACIÓN DE CONTRASEÑA ───────────────────────────────────────────────
+
+app.post("/api/auth/forgot-password", authLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    // Respuesta genérica siempre (evita enumerar emails)
+    if (!user) return res.json({ message: "Si el correo existe, recibirás un enlace en breve." });
+
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken   = crypto.createHash("sha256").update(rawToken).digest("hex");
+    user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+    await user.save();
+
+    const appUrl = process.env.APP_URL || "http://localhost:3000";
+    await sendResetEmail(user.email, `${appUrl}/reset-password?token=${rawToken}`);
+    res.json({ message: "Si el correo existe, recibirás un enlace en breve." });
+  } catch (error) {
+    console.error("Error en forgot-password:", error);
+    res.status(500).json({ message: "Error al procesar la solicitud." });
+  }
+});
+
+app.post("/api/auth/reset-password", authLimiter, async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ message: "Datos incompletos." });
+    if (newPassword.length < 8) return res.status(400).json({ message: "La contraseña debe tener al menos 8 caracteres." });
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!user) return res.status(400).json({ message: "El enlace es inválido o ha expirado." });
+
+    user.password             = await bcrypt.hash(newPassword, 10);
+    user.resetPasswordToken   = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    res.json({ message: "Contraseña actualizada correctamente. Ya puedes iniciar sesión." });
+  } catch (error) {
+    console.error("Error en reset-password:", error);
+    res.status(500).json({ message: "Error al restablecer la contraseña." });
+  }
+});
+
 // ─── PEDIDOS ──────────────────────────────────────────────────────────────────
 
 app.post("/api/orders", authMiddleware, async (req, res) => {
@@ -115,12 +166,28 @@ app.post("/api/orders", authMiddleware, async (req, res) => {
     if (dbProducts.length !== productIds.length) {
       return res.status(400).json({ message: "Uno o más productos no existen." });
     }
+    // Validación de stock
+    for (const item of products) {
+      const dbProduct = dbProducts.find((p) => p._id.toString() === item.product);
+      if (dbProduct.stock !== null && dbProduct.stock !== undefined && dbProduct.stock < item.quantity) {
+        return res.status(400).json({
+          message: `Stock insuficiente para "${dbProduct.name}". Disponible: ${dbProduct.stock}.`,
+        });
+      }
+    }
     const totalAmount = products.reduce((sum, item) => {
       const dbProduct = dbProducts.find((p) => p._id.toString() === item.product);
       return sum + dbProduct.price * item.quantity;
     }, 0);
     const newOrder = new Order({ user: userId, products, totalAmount });
     await newOrder.save();
+    // Descontar stock
+    await Promise.all(products.map((item) => {
+      const dbProduct = dbProducts.find((p) => p._id.toString() === item.product);
+      if (dbProduct.stock !== null && dbProduct.stock !== undefined) {
+        return Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
+      }
+    }));
     res.status(201).json({ message: "Pedido realizado con éxito.", totalAmount });
   } catch (error) {
     console.error("Error al crear el pedido:", error);
@@ -131,13 +198,31 @@ app.post("/api/orders", authMiddleware, async (req, res) => {
 // Historial de pedidos del usuario autenticado
 app.get("/api/orders/my", authMiddleware, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.userId })
-      .sort({ orderDate: -1 })
-      .populate({ path: "products.product", model: "Product", select: "name price" });
-    res.json(orders);
+    const page  = Math.max(1, parseInt(req.query.page)  || 1);
+    const limit = Math.min(50, parseInt(req.query.limit) || 10);
+    const skip  = (page - 1) * limit;
+    const query = { user: req.user.userId };
+    const [orders, total] = await Promise.all([
+      Order.find(query).sort({ orderDate: -1 }).skip(skip).limit(limit)
+        .populate({ path: "products.product", model: "Product", select: "name price" }),
+      Order.countDocuments(query),
+    ]);
+    res.json({ orders, total, currentPage: page, totalPages: Math.ceil(total / limit) });
   } catch (error) {
     console.error("Error al obtener historial:", error);
     res.status(500).json({ message: "Error al obtener el historial de pedidos." });
+  }
+});
+
+// ─── ADMIN — NUEVOS PEDIDOS (polling) ─────────────────────────────────────────
+
+app.get("/api/admin/orders/count-new", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const since = new Date(Date.now() - 2 * 60 * 60 * 1000); // últimas 2 horas
+    const count = await Order.countDocuments({ status: "pendiente", orderDate: { $gte: since } });
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener conteo." });
   }
 });
 
@@ -204,42 +289,98 @@ app.get("/api/admin/orders/export", authMiddleware, adminMiddleware, async (req,
     });
 
     const dateLabel = targetDate.toLocaleDateString("es-CO", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+    const fileDateLabel = targetDate.toISOString().split("T")[0];
 
-    const resumenData = [
-      [`RESUMEN DE EMPAQUE — ${dateLabel.toUpperCase()}`],
-      [],
-      ["SABOR", "CANTIDAD TOTAL"],
-      ...Object.entries(totals).sort((a, b) => b[1] - a[1]).map(([name, qty]) => [name, qty]),
-      [],
-      ["TOTAL PEDIDOS", orders.length],
+    const wb = new ExcelJS.Workbook();
+    wb.creator = "Dulce Antojo";
+
+    // ── Hoja 1: Resumen Empaque ──────────────────────────────────────────────
+    const ws1 = wb.addWorksheet("Resumen Empaque");
+    ws1.columns = [{ width: 38 }, { width: 20 }];
+
+    // Título
+    ws1.mergeCells("A1:B1");
+    const titleCell = ws1.getCell("A1");
+    titleCell.value = `RESUMEN DE EMPAQUE — ${dateLabel.toUpperCase()}`;
+    titleCell.font = { bold: true, size: 13, color: { argb: "FFFFFFFF" } };
+    titleCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1F2937" } };
+    titleCell.alignment = { horizontal: "center", vertical: "middle" };
+    ws1.getRow(1).height = 28;
+
+    ws1.addRow([]);
+
+    // Encabezados resumen
+    const hdrRow1 = ws1.addRow(["SABOR", "CANTIDAD TOTAL"]);
+    hdrRow1.eachCell(cell => {
+      cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF34D399" } };
+      cell.alignment = { horizontal: "center" };
+      cell.border = { bottom: { style: "thin", color: { argb: "FF6EE7B7" } } };
+    });
+
+    // Datos resumen
+    const sortedTotals = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+    sortedTotals.forEach(([name, qty], i) => {
+      const row = ws1.addRow([name, qty]);
+      if (i % 2 === 0) {
+        row.eachCell(cell => {
+          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF111827" } };
+        });
+      }
+      row.getCell(2).alignment = { horizontal: "center" };
+      row.getCell(2).font = { bold: true };
+    });
+
+    ws1.addRow([]);
+    const totalRow = ws1.addRow(["TOTAL PEDIDOS", orders.length]);
+    totalRow.eachCell(cell => {
+      cell.font = { bold: true, color: { argb: "FF34D399" } };
+    });
+
+    // ── Hoja 2: Detalle Pedidos ──────────────────────────────────────────────
+    const ws2 = wb.addWorksheet("Detalle Pedidos");
+    ws2.columns = [
+      { header: "HORA",     width: 12 },
+      { header: "CLIENTE",  width: 30 },
+      { header: "PRODUCTO", width: 30 },
+      { header: "CANTIDAD", width: 12 },
+      { header: "ESTADO",   width: 16 },
     ];
 
-    const detalleData = [
-      ["HORA", "CLIENTE", "PRODUCTO", "CANTIDAD", "ESTADO"],
-      ...orders.flatMap((order) =>
-        order.products.map((item) => [
+    // Estilizar fila de encabezados
+    const hdrRow2 = ws2.getRow(1);
+    hdrRow2.eachCell(cell => {
+      cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1F2937" } };
+      cell.alignment = { horizontal: "center" };
+      cell.border = { bottom: { style: "medium", color: { argb: "FF34D399" } } };
+    });
+    hdrRow2.height = 22;
+
+    // Datos detalle
+    orders.forEach((order, oi) => {
+      order.products.forEach((item) => {
+        const row = ws2.addRow([
           new Date(order.orderDate).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }),
           order.user ? order.user.businessName : "Desconocido",
           item.product ? item.product.name : "Eliminado",
           item.quantity,
           order.status,
-        ])
-      ),
-    ];
+        ]);
+        if (oi % 2 === 0) {
+          row.eachCell(cell => {
+            cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF111827" } };
+          });
+        }
+        row.getCell(4).alignment = { horizontal: "center" };
+        row.getCell(5).alignment = { horizontal: "center" };
+      });
+    });
 
-    const wb = XLSX.utils.book_new();
-    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
-    wsResumen["!cols"] = [{ wch: 35 }, { wch: 18 }];
-    XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen Empaque");
-    const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData);
-    wsDetalle["!cols"] = [{ wch: 10 }, { wch: 28 }, { wch: 28 }, { wch: 12 }, { wch: 14 }];
-    XLSX.utils.book_append_sheet(wb, wsDetalle, "Detalle Pedidos");
-
-    const fileDateLabel = targetDate.toISOString().split("T")[0];
-    const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
     res.setHeader("Content-Disposition", `attachment; filename="pedidos-${fileDateLabel}.xlsx"`);
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.send(buffer);
+    await wb.xlsx.write(res);
+    res.end();
   } catch (error) {
     console.error("Error exportando Excel:", error);
     res.status(500).json({ message: "Error al exportar." });
@@ -286,10 +427,10 @@ app.post("/api/admin/products", authMiddleware, adminMiddleware, async (req, res
 
 app.put("/api/admin/products/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { name, category, description, price, image, active } = req.body;
+    const { name, category, description, price, image, active, stock } = req.body;
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, category, description, price, image, active },
+      { name, category, description, price, image, active, stock: stock !== undefined ? stock : null },
       { new: true, runValidators: true }
     );
     if (!product) return res.status(404).json({ message: "Producto no encontrado." });
@@ -299,6 +440,15 @@ app.put("/api/admin/products/:id", authMiddleware, adminMiddleware, async (req, 
   }
 });
 
+// Upload de imagen a Cloudinary
+app.post("/api/admin/upload", authMiddleware, adminMiddleware,
+  upload.single("image"),
+  (req, res) => {
+    if (!req.file) return res.status(400).json({ message: "No se recibió ningún archivo." });
+    res.json({ url: req.file.path });
+  }
+);
+
 // ─── PÁGINAS ──────────────────────────────────────────────────────────────────
 
 app.get("/admin", (req, res) => {
@@ -307,6 +457,14 @@ app.get("/admin", (req, res) => {
 
 app.get("/mis-pedidos", (req, res) => {
   res.sendFile(__dirname + "/public/my-orders.html");
+});
+
+app.get("/forgot-password", (req, res) => {
+  res.sendFile(__dirname + "/public/forgot-password.html");
+});
+
+app.get("/reset-password", (req, res) => {
+  res.sendFile(__dirname + "/public/reset-password.html");
 });
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────

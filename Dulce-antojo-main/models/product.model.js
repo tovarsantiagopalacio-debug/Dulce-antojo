@@ -19,6 +19,7 @@ const productSchema = new mongoose.Schema({
         },
     },
     active: { type: Boolean, default: true },
+    stock: { type: Number, default: null, min: 0 }, // null = sin límite
 });
 
 module.exports = mongoose.model('Product', productSchema);

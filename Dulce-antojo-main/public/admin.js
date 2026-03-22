@@ -27,6 +27,38 @@ document.addEventListener('DOMContentLoaded', () => {
         'Authorization': `Bearer ${token}`
     });
 
+    // ── Toast ────────────────────────────────────────────────────────────────
+    const mostrarToast = (mensaje) => {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = mensaje;
+        document.body.appendChild(t);
+        setTimeout(() => {
+            t.style.animation = 'toastOut 0.3s ease forwards';
+            setTimeout(() => t.remove(), 300);
+        }, 4000);
+    };
+
+    // ── Polling de pedidos nuevos ────────────────────────────────────────────
+    let lastKnownCount = null;
+    const checkNewOrders = async () => {
+        try {
+            const res = await fetch('/api/admin/orders/count-new', { headers: authHeaders() });
+            if (!res.ok) return;
+            const { count } = await res.json();
+            if (lastKnownCount !== null && count > lastKnownCount) {
+                mostrarToast(`🧃 ${count} pedido(s) pendiente(s) nuevos`);
+                document.title = `(${count}) Dulce Antojo — Admin`;
+            } else if (count === 0) {
+                document.title = 'Admin — Dulce Antojo';
+            }
+            lastKnownCount = count;
+        } catch { /* silencioso */ }
+    };
+    checkNewOrders();
+    const pollingInterval = setInterval(checkNewOrders, 30000);
+    window.addEventListener('beforeunload', () => clearInterval(pollingInterval));
+
     const statusColors = {
         pendiente:  'bg-yellow-500/20 text-yellow-400',
         completado: 'bg-emerald-500/20 text-emerald-400',
@@ -329,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputDesc      = document.getElementById('input-descripcion');
     const inputPrecio    = document.getElementById('input-precio');
     const inputImagen    = document.getElementById('input-imagen');
+    const inputStock     = document.getElementById('input-stock');
     const formError      = document.getElementById('form-error');
 
     const abrirModal = (producto = null) => {
@@ -344,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
             inputDesc.value      = producto.description;
             inputPrecio.value    = producto.price;
             inputImagen.value    = producto.image;
+            inputStock.value     = producto.stock != null ? producto.stock : '';
         } else {
             inputId.value = '';
             formProducto.reset();
@@ -353,6 +387,31 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const cerrarModal = () => overlay.classList.add('hidden');
+
+    // Upload de imagen a Cloudinary
+    document.getElementById('input-imagen-file')?.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const status = document.getElementById('upload-status');
+        status.textContent = 'Subiendo...';
+        const formData = new FormData();
+        formData.append('image', file);
+        try {
+            const res = await fetch('/api/admin/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData,
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Error al subir');
+            inputImagen.value = data.url;
+            status.textContent = '✓ Subida correcta';
+            status.style.color = '#34D399';
+        } catch (err) {
+            status.textContent = `Error: ${err.message}`;
+            status.style.color = '#F87171';
+        }
+    });
 
     document.getElementById('btn-nuevo-producto').addEventListener('click', () => abrirModal());
     document.getElementById('btn-cerrar-modal').addEventListener('click', cerrarModal);
@@ -364,12 +423,14 @@ document.addEventListener('DOMContentLoaded', () => {
         formError.classList.add('hidden');
         const id = inputId.value;
         const esEdicion = Boolean(id);
+        const stockVal = inputStock.value.trim();
         const body = {
             name:        inputNombre.value.trim(),
             category:    inputCategoria.value,
             description: inputDesc.value.trim(),
             price:       Number(inputPrecio.value),
             image:       inputImagen.value.trim(),
+            stock:       stockVal !== '' ? Number(stockVal) : null,
         };
 
         try {

@@ -34,9 +34,40 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelado:  { color: 'bg-red-500/20 text-red-400 border-red-500/30', label: 'Cancelado' },
     };
 
+    const LIMIT = 10;
+    let currentPage = 1;
+
+    const renderPagination = (totalPages, page) => {
+        const existing = document.getElementById('pagination');
+        if (existing) existing.remove();
+        if (totalPages <= 1) return;
+
+        const nav = document.createElement('div');
+        nav.id = 'pagination';
+        nav.className = 'flex items-center justify-center gap-4 mt-8';
+        nav.innerHTML = `
+            <button id="btn-prev" ${page <= 1 ? 'disabled' : ''}
+                class="px-4 py-2 rounded-full border border-gray-700 text-gray-300 text-sm font-medium
+                       hover:border-emerald-500 hover:text-emerald-400 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                ← Anterior
+            </button>
+            <span class="text-gray-400 text-sm">Página ${page} de ${totalPages}</span>
+            <button id="btn-next" ${page >= totalPages ? 'disabled' : ''}
+                class="px-4 py-2 rounded-full border border-gray-700 text-gray-300 text-sm font-medium
+                       hover:border-emerald-500 hover:text-emerald-400 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                Siguiente →
+            </button>`;
+        ordersList.after(nav);
+
+        nav.querySelector('#btn-prev')?.addEventListener('click', () => { currentPage--; fetchMyOrders(); });
+        nav.querySelector('#btn-next')?.addEventListener('click', () => { currentPage++; fetchMyOrders(); });
+    };
+
     const fetchMyOrders = async () => {
+        loadingMessage.style.display = 'block';
+        ordersList.innerHTML = '';
         try {
-            const response = await fetch('/api/orders/my', {
+            const response = await fetch(`/api/orders/my?page=${currentPage}&limit=${LIMIT}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -49,10 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) throw new Error('Error al obtener pedidos');
 
-            const orders = await response.json();
+            const { orders, totalPages, currentPage: page } = await response.json();
             loadingMessage.style.display = 'none';
 
-            if (orders.length === 0) {
+            if (orders.length === 0 && currentPage === 1) {
                 ordersList.innerHTML = `
                     <div class="text-center py-20 text-gray-500">
                         <svg class="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <ul class="mt-2">${productsList}</ul>`;
                 ordersList.appendChild(card);
             });
+
+            renderPagination(totalPages, page);
 
         } catch (error) {
             loadingMessage.textContent = `Error: ${error.message}`;

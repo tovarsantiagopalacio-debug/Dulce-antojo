@@ -38,7 +38,7 @@
     <main class="container mx-auto px-4 py-10 max-w-6xl">
 
       <!-- RESUMEN DEL DÍA -->
-      <div id="stats-bar" class="grid grid-cols-3 gap-4 mb-8">
+      <div id="stats-bar" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5 text-center">
           <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Pedidos hoy</p>
           <p id="stat-pedidos" class="text-4xl font-bold font-heading text-white">—</p>
@@ -75,9 +75,9 @@
             <button id="btn-ayer" class="date-filter-btn px-4 py-2 rounded-full text-sm font-semibold transition">Ayer</button>
           </div>
           <input id="date-picker" type="date"
-            class="bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
+            class="w-full sm:w-auto bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500" />
           <button id="btn-exportar-excel"
-            class="ml-auto flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-2 rounded-full text-sm transition">
+            class="sm:ml-auto w-full sm:w-auto flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-2 rounded-full text-sm transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
             </svg>
@@ -151,8 +151,22 @@
               class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" />
           </div>
           <div>
-            <label class="block text-sm text-gray-400 mb-1">Imagen (https://... o /img/nombre.webp)</label>
+            <label class="block text-sm text-gray-400 mb-1">Imagen</label>
             <input id="input-imagen" type="text" required placeholder="https://..."
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500 mb-2" />
+            <div class="flex items-center gap-3">
+              <label class="flex-1 cursor-pointer">
+                <span class="block text-center text-xs text-gray-400 border border-dashed border-gray-600 rounded-lg px-3 py-2 hover:border-emerald-500 transition">
+                  📁 Subir imagen desde archivo
+                </span>
+                <input id="input-imagen-file" type="file" accept="image/*" class="hidden" />
+              </label>
+              <span id="upload-status" class="text-xs text-gray-500"></span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Stock <span class="text-gray-600">(dejar vacío = sin límite)</span></label>
+            <input id="input-stock" type="number" min="0" placeholder="Ej: 50"
               class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" />
           </div>
           <div id="form-error" class="hidden text-red-400 text-sm pt-1"></div>

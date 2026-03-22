@@ -156,26 +156,34 @@ document.addEventListener('DOMContentLoaded', () => {
         productsToRender.forEach(product => {
             const card = document.createElement('div');
             const productId = product._id;
+            const sinStock = product.stock !== null && product.stock !== undefined && product.stock === 0;
+            const stockBajo = product.stock !== null && product.stock !== undefined && product.stock > 0 && product.stock <= 5;
+            const priceDisplay = product.priceFormatted ||
+                new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(product.price);
             card.className = 'product-card bg-gray-900/50 rounded-2xl overflow-hidden flex flex-col border border-gray-800 transition-all duration-300 hover:border-emerald-500/50';
             card.innerHTML = `
                 <div class="relative">
                     <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" class="w-full h-52 object-cover">
-                    <div class="absolute top-0 right-0 bg-black/50 text-white text-lg font-bold p-2 px-4 m-3 rounded-full font-heading">${escapeHtml(product.priceFormatted)}</div>
+                    <div class="absolute top-0 right-0 bg-black/50 text-white text-lg font-bold p-2 px-4 m-3 rounded-full font-heading">${escapeHtml(priceDisplay)}</div>
+                    ${sinStock ? '<div class="absolute top-0 left-0 bg-red-600/90 text-white text-xs font-bold px-3 py-1 m-3 rounded-full">Sin stock</div>' : ''}
+                    ${stockBajo ? `<div class="absolute top-0 left-0 bg-yellow-500/90 text-black text-xs font-bold px-3 py-1 m-3 rounded-full">Últimos ${product.stock}</div>` : ''}
                 </div>
                 <div class="p-5 flex flex-col flex-grow">
                     <h4 class="text-xl font-bold text-white mb-2 font-heading">${escapeHtml(product.name)}</h4>
                     <p class="text-gray-400 text-sm mb-4 flex-grow">${escapeHtml(product.description)}</p>
-                    
+
                     <div class="mt-auto flex items-center gap-2">
-                        <div class="flex items-center border-2 border-gray-700 rounded-full">
-                            <button class="quantity-btn p-2 text-lg leading-none" data-action="decrease" data-product-id="${productId}">−</button>
-                            <input type="number" value="1" min="1" max="999"
+                        <div class="flex items-center border-2 border-gray-700 rounded-full ${sinStock ? 'opacity-40' : ''}">
+                            <button class="quantity-btn p-2 text-lg leading-none" data-action="decrease" data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>−</button>
+                            <input type="number" value="1" min="1" max="${product.stock ?? 999}"
                                 class="quantity-input w-14 bg-transparent text-center font-bold text-white focus:outline-none"
-                                data-product-id="${productId}">
-                            <button class="quantity-btn p-2 text-lg leading-none" data-action="increase" data-product-id="${productId}">+</button>
+                                data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>
+                            <button class="quantity-btn p-2 text-lg leading-none" data-action="increase" data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>+</button>
                         </div>
-                        <button class="add-to-cart-btn flex-grow bg-emerald-500 text-white font-semibold py-3 px-4 rounded-full hover:bg-emerald-600 transition" data-product-id="${productId}">
-                            Agregar
+                        <button class="add-to-cart-btn flex-grow font-semibold py-3 px-4 rounded-full transition
+                            ${sinStock ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-emerald-500 text-white hover:bg-emerald-600'}"
+                            data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>
+                            ${sinStock ? 'Sin stock' : 'Agregar'}
                         </button>
                     </div>
                     </div>`;

@@ -8,9 +8,11 @@ const userSchema = new mongoose.Schema({
     // --- NUEVO CAMPO PARA EL ROL ---
     role: {
         type: String,
-        enum: ['user', 'admin'], // Solo puede ser 'user' o 'admin'
-        default: 'user' // Por defecto, todos los nuevos registros son 'user'
-    }
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    resetPasswordToken:   { type: String },
+    resetPasswordExpires: { type: Date },
 });
 
 const User = mongoose.model('User', userSchema);
