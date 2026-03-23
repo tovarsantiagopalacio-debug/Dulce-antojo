@@ -4,9 +4,18 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
+const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const ExcelJS = require("exceljs");
 require("dotenv").config();
+
+// ─── VALIDACIÓN DE VARIABLES DE ENTORNO ───────────────────────────────────────
+const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET"];
+const missingEnv = REQUIRED_ENV.filter((v) => !process.env[v]);
+if (missingEnv.length > 0) {
+  console.error(`❌ Variables de entorno faltantes: ${missingEnv.join(", ")}`);
+  process.exit(1);
+}
 
 const Product = require("./models/product.model");
 const User = require("./models/user.model");
@@ -23,7 +32,22 @@ const PORT = process.env.PORT || 3000;
 // Necesario en Railway para que rate-limit funcione detrás de proxy
 app.set("trust proxy", 1);
 
-// Seguridad
+// ─── CORS ─────────────────────────────────────────────────────────────────────
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.APP_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permitir requests sin origin (ej. Railway health checks, curl)
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origen no permitido: ${origin}`));
+  },
+  credentials: true,
+}));
+
+// ─── SEGURIDAD ────────────────────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
 
 const authLimiter = rateLimit({

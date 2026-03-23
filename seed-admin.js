@@ -11,8 +11,13 @@ require("dotenv").config();
 const User = require("./models/user.model");
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@dulceantojo.com";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin123!";
-const ADMIN_NAME = process.env.ADMIN_NAME || "Administrador";
+const ADMIN_NAME  = process.env.ADMIN_NAME  || "Administrador";
+
+if (!process.env.ADMIN_PASSWORD) {
+  console.error("❌ Define ADMIN_PASSWORD en el .env antes de ejecutar este script.");
+  process.exit(1);
+}
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 const run = async () => {
   await mongoose.connect(process.env.MONGO_URI);
