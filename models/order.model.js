@@ -40,4 +40,6 @@ const orderSchema = new Schema({
     }
 });
 
+orderSchema.index({ user: 1, orderDate: -1 });
+
 module.exports = mongoose.model('Order', orderSchema);

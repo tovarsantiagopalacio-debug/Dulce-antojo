@@ -18,8 +18,11 @@ const productSchema = new mongoose.Schema({
             message: 'La imagen debe ser una URL (https://...) o ruta local (/img/...).',
         },
     },
-    active: { type: Boolean, default: true },
-    stock: { type: Number, default: null, min: 0 }, // null = sin límite
+    active:         { type: Boolean, default: true },
+    stock:          { type: Number, default: 0, min: 0 },
+    unlimitedStock: { type: Boolean, default: false }, // true = sin límite de stock
 });
+
+productSchema.index({ active: 1, category: 1 });
 
 module.exports = mongoose.model('Product', productSchema);
