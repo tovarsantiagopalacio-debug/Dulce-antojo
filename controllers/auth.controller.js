@@ -10,7 +10,7 @@ const register = async (req, res) => {
     const { businessName, email, password } = req.validatedBody;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "El correo electrónico ya está registrado." });
+      return res.status(409).json({ message: "El correo electrónico ya está registrado." });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ businessName, email, password: hashedPassword });
@@ -29,9 +29,9 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.validatedBody;
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Credenciales incorrectas." });
+    if (!user) return res.status(401).json({ message: "Credenciales incorrectas." });
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Credenciales incorrectas." });
+    if (!isMatch) return res.status(401).json({ message: "Credenciales incorrectas." });
     const payload = { userId: user._id, name: user.businessName, role: user.role };
     const token   = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
     res.json({
