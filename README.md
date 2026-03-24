@@ -1,5 +1,7 @@
 # Dulce Antojo 🧊
 
+[![CI](https://github.com/tovarsantiagopalacio-debug/Dulce-antojo/actions/workflows/ci.yml/badge.svg)](https://github.com/tovarsantiagopalacio-debug/Dulce-antojo/actions/workflows/ci.yml)
+
 Plataforma web de pedidos mayoristas para **Dulce Antojo**, empresa de granizados 100% naturales del Eje Cafetero, Colombia.
 
 ## ¿Qué hace?
