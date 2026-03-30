@@ -11,4 +11,6 @@ const productSchema = z.object({
   unlimitedStock: z.boolean().optional(),
 });
 
-module.exports = { productSchema };
+const updateProductSchema = productSchema.partial();
+
+module.exports = { productSchema, updateProductSchema };
