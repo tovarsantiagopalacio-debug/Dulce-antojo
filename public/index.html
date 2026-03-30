@@ -219,6 +219,10 @@
         class="hero-bg rounded-3xl text-white p-8 md:p-16 flex flex-col items-center justify-center text-center mb-20 min-h-[500px] md:min-h-[600px] reveal-on-scroll"
       >
         <div class="max-w-4xl">
+          <div class="hero-badge mb-6 mx-auto">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+            Eje Cafetero · Mayorista · 100% Natural
+          </div>
           <h2
             class="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tighter font-heading"
           >
@@ -232,9 +236,10 @@
           </p>
           <a
             href="#productos"
-            class="bg-emerald-500 text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-emerald-600 transition duration-300 transform hover:scale-105 glowing-btn overflow-hidden relative"
-            >Ver Catálogo</a
-          >
+            class="bg-emerald-500 text-white font-bold py-4 px-10 rounded-full text-lg transition duration-300 glowing-btn inline-flex items-center gap-2"
+          >Ver Catálogo
+            <svg class="cta-arrow w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
         </div>
       </section>
 
@@ -246,119 +251,34 @@
           De la Finca a tu Negocio:
           <span class="animated-gradient-text">Nuestra Promesa de Calidad</span>
         </h3>
-        <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-8 text-center">
-          <div class="flex flex-col items-center">
-            <div
-              class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4"
-            >
-              <svg
-                class="w-12 h-12 text-emerald-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                ></path>
-              </svg>
+        <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-6 text-center stagger-children">
+          <div class="process-step flex flex-col items-center">
+            <div class="step-icon-ring rounded-full w-24 h-24 flex items-center justify-center mb-5">
+              <svg class="w-11 h-11 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
-            <h4 class="text-xl font-semibold font-heading text-white mb-2">
-              1. Fruta Local
-            </h4>
-            <p class="text-gray-400">
-              Seleccionamos a mano las mejores frutas de productores del Eje
-              Cafetero, garantizando frescura y apoyando nuestra comunidad.
-            </p>
+            <h4 class="text-xl font-semibold font-heading text-white mb-2">1. Fruta Local</h4>
+            <p class="text-gray-400 text-sm leading-relaxed">Seleccionamos a mano las mejores frutas de productores del Eje Cafetero, garantizando frescura y apoyando nuestra comunidad.</p>
           </div>
-          <div class="flex flex-col items-center">
-            <div
-              class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4"
-            >
-              <svg
-                class="w-12 h-12 text-emerald-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 4h5m-5 4h5"
-                ></path>
-              </svg>
+          <div class="process-step flex flex-col items-center">
+            <div class="step-icon-ring rounded-full w-24 h-24 flex items-center justify-center mb-5">
+              <svg class="w-11 h-11 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 4h5m-5 4h5"/></svg>
             </div>
-            <h4 class="text-xl font-semibold font-heading text-white mb-2">
-              2. Producción Artesanal
-            </h4>
-            <p class="text-gray-400">
-              En nuestro centro de producción, transformamos la fruta en
-              granizados deliciosos, sin conservantes y endulzados solo con
-              Stevia.
-            </p>
+            <h4 class="text-xl font-semibold font-heading text-white mb-2">2. Producción Artesanal</h4>
+            <p class="text-gray-400 text-sm leading-relaxed">En nuestro centro de producción, transformamos la fruta en granizados deliciosos, sin conservantes y endulzados solo con Stevia.</p>
           </div>
-          <div class="flex flex-col items-center">
-            <div
-              class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4"
-            >
-              <svg
-                class="w-12 h-12 text-emerald-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
+          <div class="process-step flex flex-col items-center">
+            <div class="step-icon-ring rounded-full w-24 h-24 flex items-center justify-center mb-5">
+              <svg class="w-11 h-11 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
-            <h4 class="text-xl font-semibold font-heading text-white mb-2">
-              3. Control de Calidad
-            </h4>
-            <p class="text-gray-400">
-              Cada lote pasa por un riguroso control de calidad para asegurar el
-              sabor y la textura perfecta que nos caracteriza.
-            </p>
+            <h4 class="text-xl font-semibold font-heading text-white mb-2">3. Control de Calidad</h4>
+            <p class="text-gray-400 text-sm leading-relaxed">Cada lote pasa por un riguroso control de calidad para asegurar el sabor y la textura perfecta que nos caracteriza.</p>
           </div>
-          <div class="flex flex-col items-center">
-            <div
-              class="bg-gray-800 rounded-full w-24 h-24 flex items-center justify-center border-2 border-gray-700 mb-4"
-            >
-              <svg
-                class="w-12 h-12 text-emerald-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
-                ></path>
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"
-                ></path>
-              </svg>
+          <div class="process-step flex flex-col items-center">
+            <div class="step-icon-ring rounded-full w-24 h-24 flex items-center justify-center mb-5">
+              <svg class="w-11 h-11 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"/></svg>
             </div>
-            <h4 class="text-xl font-semibold font-heading text-white mb-2">
-              4. Logística de Frío
-            </h4>
-            <p class="text-gray-400">
-              Garantizamos la cadena de frío con un transporte especializado,
-              asegurando que el producto llegue a tu negocio en perfectas
-              condiciones.
-            </p>
+            <h4 class="text-xl font-semibold font-heading text-white mb-2">4. Logística de Frío</h4>
+            <p class="text-gray-400 text-sm leading-relaxed">Garantizamos la cadena de frío con un transporte especializado, asegurando que el producto llegue a tu negocio en perfectas condiciones.</p>
           </div>
         </div>
       </section>
@@ -430,33 +350,21 @@
             </p>
           </div>
           <div class="grid grid-cols-2 gap-4">
-            <div
-              class="bg-gray-900/50 border border-gray-800 rounded-2xl p-6 text-center"
-            >
-              <p class="text-3xl font-bold text-emerald-400 font-heading">
-                +50
-              </p>
-              <p class="text-gray-400 text-sm mt-1">Socios activos</p>
+            <div class="stat-card">
+              <p class="stat-number">+50</p>
+              <p class="text-gray-400 text-sm mt-2 font-medium">Socios activos</p>
             </div>
-            <div
-              class="bg-gray-900/50 border border-gray-800 rounded-2xl p-6 text-center"
-            >
-              <p class="text-3xl font-bold text-emerald-400 font-heading">
-                100%
-              </p>
-              <p class="text-gray-400 text-sm mt-1">Natural</p>
+            <div class="stat-card">
+              <p class="stat-number">100%</p>
+              <p class="text-gray-400 text-sm mt-2 font-medium">Natural</p>
             </div>
-            <div
-              class="bg-gray-900/50 border border-gray-800 rounded-2xl p-6 text-center"
-            >
-              <p class="text-3xl font-bold text-emerald-400 font-heading">8</p>
-              <p class="text-gray-400 text-sm mt-1">Sabores únicos</p>
+            <div class="stat-card">
+              <p class="stat-number">8</p>
+              <p class="text-gray-400 text-sm mt-2 font-medium">Sabores únicos</p>
             </div>
-            <div
-              class="bg-gray-900/50 border border-gray-800 rounded-2xl p-6 text-center"
-            >
-              <p class="text-3xl font-bold text-emerald-400 font-heading">0</p>
-              <p class="text-gray-400 text-sm mt-1">Conservantes</p>
+            <div class="stat-card">
+              <p class="stat-number">0</p>
+              <p class="text-gray-400 text-sm mt-2 font-medium">Conservantes</p>
             </div>
           </div>
         </div>
@@ -471,9 +379,7 @@
           <span class="animated-gradient-text">Nuestros Socios</span>
         </h3>
         <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-          <div
-            class="bg-gray-900/50 border border-gray-800 rounded-2xl p-8 flex flex-col"
-          >
+          <div class="testimonial-card">
             <svg
               class="w-10 h-10 text-emerald-500/50 mb-4"
               fill="currentColor"
@@ -501,9 +407,7 @@
               </div>
             </div>
           </div>
-          <div
-            class="bg-gray-900/50 border border-gray-800 rounded-2xl p-8 flex flex-col"
-          >
+          <div class="testimonial-card">
             <svg
               class="w-10 h-10 text-emerald-500/50 mb-4"
               fill="currentColor"

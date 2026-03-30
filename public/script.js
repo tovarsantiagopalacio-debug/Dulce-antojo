@@ -160,33 +160,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const stockBajo = product.stock !== null && product.stock !== undefined && product.stock > 0 && product.stock <= 5;
             const priceDisplay = product.priceFormatted ||
                 new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(product.price);
-            card.className = 'product-card bg-gray-900/50 rounded-2xl overflow-hidden flex flex-col border border-gray-800 transition-all duration-300 hover:border-emerald-500/50';
+            card.className = 'product-card bg-gray-900/40 backdrop-blur-sm rounded-2xl overflow-hidden flex flex-col border border-gray-800/60';
             card.innerHTML = `
-                <div class="relative">
-                    <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" class="w-full h-52 object-cover">
-                    <div class="absolute top-0 right-0 bg-black/50 text-white text-lg font-bold p-2 px-4 m-3 rounded-full font-heading">${escapeHtml(priceDisplay)}</div>
+                <div class="card-img-wrapper">
+                    <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" class="w-full h-52 object-cover" loading="lazy">
+                    <div class="absolute top-0 right-0 bg-black/60 backdrop-blur-sm text-white text-sm font-bold px-4 py-2 m-3 rounded-full font-heading border border-white/10">${escapeHtml(priceDisplay)}</div>
+                    <div class="card-category-badge">${escapeHtml(product.category)}</div>
                     ${sinStock ? '<div class="absolute top-0 left-0 bg-red-600/90 text-white text-xs font-bold px-3 py-1 m-3 rounded-full">Sin stock</div>' : ''}
                     ${stockBajo ? `<div class="absolute top-0 left-0 bg-yellow-500/90 text-black text-xs font-bold px-3 py-1 m-3 rounded-full">Últimos ${product.stock}</div>` : ''}
                 </div>
                 <div class="p-5 flex flex-col flex-grow">
-                    <h4 class="text-xl font-bold text-white mb-2 font-heading">${escapeHtml(product.name)}</h4>
-                    <p class="text-gray-400 text-sm mb-4 flex-grow">${escapeHtml(product.description)}</p>
-
+                    <h4 class="text-lg font-bold text-white mb-1 font-heading">${escapeHtml(product.name)}</h4>
+                    <p class="text-gray-400 text-sm mb-4 flex-grow leading-relaxed">${escapeHtml(product.description)}</p>
                     <div class="mt-auto flex items-center gap-2">
-                        <div class="flex items-center border-2 border-gray-700 rounded-full ${sinStock ? 'opacity-40' : ''}">
-                            <button class="quantity-btn p-2 text-lg leading-none" data-action="decrease" data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>−</button>
+                        <div class="flex items-center border border-gray-700 rounded-full ${sinStock ? 'opacity-40' : ''}">
+                            <button class="quantity-btn p-2 text-lg leading-none cursor-pointer select-none" data-action="decrease" data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>−</button>
                             <input type="number" value="1" min="1" max="${product.stock ?? 999}"
-                                class="quantity-input w-14 bg-transparent text-center font-bold text-white focus:outline-none"
+                                class="quantity-input w-12 bg-transparent text-center font-bold text-white focus:outline-none text-sm"
                                 data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>
-                            <button class="quantity-btn p-2 text-lg leading-none" data-action="increase" data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>+</button>
+                            <button class="quantity-btn p-2 text-lg leading-none cursor-pointer select-none" data-action="increase" data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>+</button>
                         </div>
-                        <button class="add-to-cart-btn flex-grow font-semibold py-3 px-4 rounded-full transition
-                            ${sinStock ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-emerald-500 text-white hover:bg-emerald-600'}"
+                        <button class="add-to-cart-btn flex-grow font-semibold py-3 px-4 rounded-full transition-all duration-200
+                            ${sinStock ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-emerald-500 text-white hover:bg-emerald-400 active:scale-95 cursor-pointer'}"
                             data-product-id="${productId}" ${sinStock ? 'disabled' : ''}>
                             ${sinStock ? 'Sin stock' : 'Agregar'}
                         </button>
                     </div>
-                    </div>`;
+                </div>`;
             productList.appendChild(card);
         });
     };
@@ -548,22 +548,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- REVEAL ON SCROLL ---
     const setupRevealOnScroll = () => {
-        const revealElements = document.querySelectorAll('.reveal-on-scroll');
+        const selector = '.reveal-on-scroll, .stagger-children';
+        const revealElements = document.querySelectorAll(selector);
         if (revealElements.length === 0) return;
-
-        // Agregar estilos iniciales: invisibles y desplazados hacia abajo
-        revealElements.forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(40px)';
-            el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-        });
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                    observer.unobserve(entry.target); // Solo animar una vez
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.1 });
