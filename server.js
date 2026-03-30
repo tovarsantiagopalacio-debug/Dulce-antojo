@@ -8,6 +8,10 @@ if (missingEnv.length > 0) {
   console.error(`❌ Variables de entorno faltantes: ${missingEnv.join(", ")}`);
   process.exit(1);
 }
+if (process.env.JWT_SECRET.length < 32) {
+  console.error("❌ JWT_SECRET debe tener al menos 32 caracteres.");
+  process.exit(1);
+}
 
 const app  = require("./app");
 const PORT = process.env.PORT || 3000;
