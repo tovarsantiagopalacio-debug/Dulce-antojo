@@ -25,7 +25,7 @@ app.use(helmet({
       scriptSrc:   ["'self'", "'unsafe-inline'"],
       styleSrc:    ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc:     ["'self'", "https://fonts.gstatic.com"],
-      imgSrc:      ["'self'", "data:", "blob:", "https://res.cloudinary.com"],
+      imgSrc:      ["'self'", "data:", "blob:", "https://res.cloudinary.com", "https://placehold.co"],
       connectSrc:  ["'self'"],
       objectSrc:   ["'none'"],
       frameAncestors: ["'none'"],
